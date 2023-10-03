@@ -1,0 +1,33 @@
+services:
+
+  api:
+    build: /api
+    ports:
+      - "4001:4001"
+
+  front-end:
+    build: /printos_front_end
+    ports:
+      - "3000:3000"
+
+
+  print_data_client:
+    build: /printer_client
+    ports:
+      - "4000:4000"
+
+  cloud_service_intake_process:
+    build: /cloudservice_subscriber
+    ports:
+      - "3999:3999"
+      
+  mongodb:
+    image: mongo:latest
+    container_name: /mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
