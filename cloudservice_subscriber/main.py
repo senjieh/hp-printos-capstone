@@ -41,7 +41,7 @@ class CmdData:
         self.input_ca = "root-CA.crt"
         self.input_cert = "printOS_subscriber.cert.pem"
         self.input_key = "printOS_subscriber.private.key"
-        self.input_clientId = "basicPubSub"
+        self.input_clientId = "subscriber"
         self.input_topic = "sdk/test/python"
         self.input_count = 0
         self.input_proxy_host = None
