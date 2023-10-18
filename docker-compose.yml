@@ -6,10 +6,9 @@ services:
       - "4001:4001"
 
   front-end:
-    build: /printos_front_end
+    build: /vue_frontend
     ports:
-      - "3000:3000"
-
+      - "80:80"
 
   print_data_client:
     build: /printer_client
