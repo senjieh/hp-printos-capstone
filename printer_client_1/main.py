@@ -24,7 +24,7 @@ class CmdData:
         self.input_ca = "root-CA.crt"
         self.input_cert = "printOS_client.cert.pem"
         self.input_key = "printOS_client.private.key"
-        self.input_clientId = "publisher"
+        self.input_clientId = "publisher_1"
         self.input_topic = "sdk/test/python"
         self.input_count = 0
         # Assuming you do not need the proxy settings

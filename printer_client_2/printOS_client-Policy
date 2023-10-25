@@ -1,0 +1,55 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Receive",
+        "iot:PublishRetain"
+      ],
+      "Resource": [
+        "arn:aws:iot:us-east-2:600498895418:topic/sdk/test/java",
+        "arn:aws:iot:us-east-2:600498895418:topic/sdk/test/python",
+        "arn:aws:iot:us-east-2:600498895418:topic/sdk/test/printer2",
+        "arn:aws:iot:us-east-2:600498895418:topic/sdk/test/js"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Subscribe",
+      "Resource": [
+        "arn:aws:iot:us-east-2:600498895418:topicfilter/sdk/test/java",
+        "arn:aws:iot:us-east-2:600498895418:topicfilter/sdk/test/python",
+        "arn:aws:iot:us-east-2:600498895418:topicfilter/sdk/test/js"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": [
+        "arn:aws:iot:us-east-2:600498895418:client/sdk-java",
+        "arn:aws:iot:us-east-2:600498895418:client/publisher_1",
+        "arn:aws:iot:us-east-2:600498895418:client/sdk-nodejs-*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": [
+        "arn:aws:iot:us-east-2:600498895418:client/sdk-java",
+        "arn:aws:iot:us-east-2:600498895418:client/publisher_2",
+        "arn:aws:iot:us-east-2:600498895418:client/sdk-nodejs-*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": [
+        "arn:aws:iot:us-east-2:600498895418:client/sdk-java",
+        "arn:aws:iot:us-east-2:600498895418:client/publisher_3",
+        "arn:aws:iot:us-east-2:600498895418:client/sdk-nodejs-*"
+      ]
+    }
+  ]
+}
