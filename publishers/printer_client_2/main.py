@@ -8,6 +8,7 @@ import threading
 import time
 import json
 from utils.command_line_utils import CommandLineUtils
+from data_creator2 import get_job_results
 
 # This client uses the Message Broker for AWS IoT to send data through an MQTT connection. 
 # On startup, the device connects to the server and begins publishing messages to that topic.
@@ -33,7 +34,7 @@ class CmdData:
         # Add other necessary fields with default or hardcoded values as needed
         self.input_port = 8883  # Assuming the default MQTT over TLS port
         self.input_is_ci = False  # Assuming you do not need CI functionality
-        self.input_message = "Test Message"
+        self.input_message = get_job_results(10)
 
 cmdData = CmdData()
 received_count = 0
