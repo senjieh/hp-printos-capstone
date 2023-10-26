@@ -58,7 +58,8 @@ def generate_printer_data():
     pages_printed = pages - pages_dropped
 
     return {
-        "id": 1,  # Random ID between 1 to 10000
+        "id": random.randint(1, 1000000),
+        "printer_id": 1,
         "print_job": generate_random_id(),
         "print_job_pages": pages,
         "print_job_pages_dropped": pages_dropped,
