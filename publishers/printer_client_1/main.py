@@ -6,6 +6,8 @@ from awsiot import mqtt_connection_builder
 import sys
 import threading
 import time
+import random
+import string
 import json
 from utils.command_line_utils import CommandLineUtils
 
@@ -39,6 +41,30 @@ cmdData = CmdData()
 received_count = 0
 received_all_event = threading.Event()
 
+
+def generate_random_id(length=8):
+    """
+    Generate a random ID consisting of both letters and numbers.
+    """
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
+
+def generate_printer_data():
+    """
+    Generate random printer data.
+    """
+    job_name = random.choice(["Document", "Presentation", "Invoice", "Report", "Letter"])
+    pages = random.randint(1, 100)  # Assuming a document can have up to 100 pages
+    pages_dropped = random.randint(0, pages)  # Randomly determine how many pages failed to print
+    pages_printed = pages - pages_dropped
+
+    return {
+        "id": 1,  # Random ID between 1 to 10000
+        "print_job": generate_random_id(),
+        "print_job_pages": pages,
+        "print_job_pages_dropped": pages_dropped,
+        "print_job_pages_printed": pages_printed,
+        "timestamp": int(time.time())
+    }
 
 # Callback when connection is accidentally lost.
 def on_connection_interrupted(connection, error, **kwargs):
@@ -104,31 +130,23 @@ if __name__ == '__main__':
 
     message_count = cmdData.input_count
     message_topic = cmdData.input_topic
-    message_string = cmdData.input_message
 
-    # Publish message to server desired number of times.
-    # This step is skipped if message is blank.
-    # This step loops forever if count was set to 0.
-    if message_string:
-        if message_count == 0:
-            print("Sending messages until program killed")
-        else:
-            print("Sending {} message(s)".format(message_count))
+    if message_count == 0:
+        print("Sending messages until program killed")
+    else:
+        print("Sending {} message(s)".format(message_count))
 
-        publish_count = 1
-        while (publish_count <= message_count) or (message_count == 0):
-            #format message
-            message = "{} [{}]".format(message_string, publish_count)
-            print("Publishing message to topic '{}': {}".format(message_topic, message))
-            message_json = json.dumps(message)
-            #send message to broker
-            mqtt_connection.publish(
-                topic=message_topic,
-                payload=message_json,
-                qos=mqtt.QoS.AT_LEAST_ONCE)
-            #wait 10s to send another message
-            time.sleep(10)
-            publish_count += 1
+    publish_count = 1
+    while (publish_count <= message_count) or (message_count == 0):
+        printer_data = generate_printer_data()
+        print("Publishing message to topic '{}': {}".format(message_topic, printer_data))
+        message_json = json.dumps(printer_data)
+        mqtt_connection.publish(
+            topic=message_topic,
+            payload=message_json,
+            qos=mqtt.QoS.AT_LEAST_ONCE)
+        time.sleep(random.randint(5, 30))  # Randomize sleep time between 5 to 30 seconds
+        publish_count += 1
 
     # Disconnect
     print("Disconnecting...")
