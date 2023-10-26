@@ -6,6 +6,7 @@
     <ul v-if="apiData">
         <li v-for="fact in apiData" :key="fact._id">{{ fact.text }}</li>
     </ul>
+    <Button>321</Button>
   </div>
 </template>
 
