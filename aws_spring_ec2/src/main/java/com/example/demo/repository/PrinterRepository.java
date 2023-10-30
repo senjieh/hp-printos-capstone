@@ -1,12 +1,11 @@
 package com.example.demo.repository;
 
 
-import com.example.demo.model.Printer;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+
 import java.util.List;
+import java.util.Map;
 
 public interface PrinterRepository {
-    void save(Printer printer);
-    Printer get(Long id);
-    List<Printer> getAll();
-    void delete(Long id);
+    public List<Map<String, AttributeValue>> fetchPrinterData(long start, long end, int printerId) ;
 }
