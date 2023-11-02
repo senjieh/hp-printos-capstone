@@ -1,0 +1,11 @@
+# Use the official OpenJDK base image
+FROM openjdk:17
+
+# Set the volume point to /tmp
+VOLUME /tmp
+
+# Copy the current application jar file to the docker image
+COPY target/my-app.jar app.jar
+
+# Run the jar file 
+ENTRYPOINT ["java", "-jar", "/app.jar"]

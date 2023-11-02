@@ -1,75 +1,70 @@
 package com.example.demo.model;
 
 public class Printer {
-        private Long id;
-        private Long job_id;       // Added this field
-        private int pages;         // Added this field
-        private int pages_printed; // Added this field
-        private int pages_dropped; // Added this field
-        private String timestamp;  // Added this field
-
-        // Default constructor
+        private long totalPrinted;
+        private long totalDropped;
+        private long totalPlanned;
+        private long timestampStart;
+        private long timestampEnd;
+    
+        // Constructor for ease of use
         public Printer() {
+            this.totalPrinted = 0;
+            this.totalDropped = 0;
+            this.totalPlanned = 0;
+            this.timestampStart = 0;
+            this.timestampEnd = 0;
+        }
+    
+        // Getters
+        public long getTotalPrinted() {
+            return totalPrinted;
+        }
+    
+        public long getTotalDropped() {
+            return totalDropped;
+        }
+    
+        public long getTotalPlanned() {
+            return totalPlanned;
         }
 
-        // Parameterized constructor
-        public Printer(Long id, String brand,
-                       Long job_id, int pages, int pages_printed, int pages_dropped, String timestamp) {
-            this.id = id;
-            this.job_id = job_id;
-            this.pages = pages;
-            this.pages_printed = pages_printed;
-            this.pages_dropped = pages_dropped;
-            this.timestamp = timestamp;
+        public long getTimestampStart() {
+            return timestampStart;
         }
-    // Getter and Setter methods
 
-    public Long getId() {
-        return id;
+        public long getTimestampEnd() {
+            return timestampEnd;
+        }
+    
+        // Setters
+        public void setTotalPrinted(long totalPrinted) {
+            this.totalPrinted = totalPrinted;
+        }
+    
+        public void setTotalDropped(long totalDropped) {
+            this.totalDropped = totalDropped;
+        }
+    
+        public void setTotalPlanned(long totalPlanned) {
+            this.totalPlanned = totalPlanned;
+        }
+
+        public void setTimestampStart(long timestampStart) {
+            this.timestampStart = timestampStart;
+        }
+        public void setTimestampEnd(long timestampEnd) {
+            this.timestampEnd = timestampEnd;
+        }
+    
+        @Override
+        public String toString() {
+            return "PrinterMetrics{" +
+                   "totalPrinted=" + totalPrinted +
+                   ", totalDropped=" + totalDropped +
+                   ", totalPlanned=" + totalPlanned +
+                   ", timestampStart=" + timestampStart +
+                   ", timestampEnd=" + timestampEnd +
+                   '}';
+        }
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
-    public Long getJobId() {
-        return job_id;
-    }
-
-    public void setJobId(Long job_id) {
-        this.job_id = job_id;
-    }
-
-    public int getPages() {
-        return pages;
-    }
-
-    public void setPages(int pages) {
-        this.pages = pages;
-    }
-
-    public int getPagesPrinted() {
-        return pages_printed;
-    }
-
-    public void setPagesPrinted(int pages_printed) {
-        this.pages_printed = pages_printed;
-    }
-
-    public int getPagesDropped() {
-        return pages_dropped;
-    }
-
-    public void setPagesDropped(int pages_dropped) {
-        this.pages_dropped = pages_dropped;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
-}
