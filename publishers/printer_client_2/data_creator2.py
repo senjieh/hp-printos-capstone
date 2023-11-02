@@ -16,7 +16,6 @@ def get_job_results(n):
 def print_page():
     result = r.random()
     percent_fail = 10
-    percent_success = 100 - percent_fail
 
     if result < percent_fail/100:
         return "The page failed to print correctly."

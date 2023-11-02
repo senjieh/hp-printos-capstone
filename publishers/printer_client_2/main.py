@@ -22,7 +22,7 @@ from data_creator2 import get_job_results
 class CmdData:
     def __init__(self):
         self.input_endpoint = "az1v6dihq87k4-ats.iot.us-east-2.amazonaws.com"
-        self.input_ca = "rootCA1.pem"
+        self.input_ca = "../rootCA/rootCA1.pem"
         self.input_cert = "printOS_client2.cert.pem"
         self.input_key = "printOS_client2.private.key"
         self.input_clientId = "publisher_2"
