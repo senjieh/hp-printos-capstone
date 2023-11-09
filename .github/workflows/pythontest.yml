@@ -3,6 +3,9 @@ name: Python-test
 on:
   push:
 
+permissions:
+  contents: write
+
 jobs:
   run-tests:
     strategy:
