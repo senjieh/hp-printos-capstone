@@ -1,70 +1,93 @@
 package com.example.demo.model;
 
 public class Printer {
-        private long totalPrinted;
-        private long totalDropped;
-        private long totalPlanned;
-        private long timestampStart;
-        private long timestampEnd;
+        private int id;
+        private String type;
+        private String model;
+        private int last_update;
+        private int user;
+        private int connection_start;
+        private String printer_image;
     
         // Constructor for ease of use
         public Printer() {
-            this.totalPrinted = 0;
-            this.totalDropped = 0;
-            this.totalPlanned = 0;
-            this.timestampStart = 0;
-            this.timestampEnd = 0;
+            this.id = 0;
+            this.type = "";
+            this.model = "";
+            this.printer_image = "";
+            this.connection_start = 0;
+            this.last_update = 0;
+            this.user = 0;
         }
     
         // Getters
-        public long getTotalPrinted() {
-            return totalPrinted;
+        public int getID() {
+            return id;
         }
     
-        public long getTotalDropped() {
-            return totalDropped;
+        public String getType() {
+            return type;
         }
     
-        public long getTotalPlanned() {
-            return totalPlanned;
+        public String getModel() {
+            return model;
         }
 
-        public long getTimestampStart() {
-            return timestampStart;
+        public int getConnectionStart() {
+            return connection_start;
         }
 
-        public long getTimestampEnd() {
-            return timestampEnd;
+        public String getPrinterImage() {
+            return printer_image;
+        }
+
+
+        public int getLastUpdate() {
+            return last_update;
+        }
+
+        public int getUser() {
+            return user;
         }
     
         // Setters
-        public void setTotalPrinted(long totalPrinted) {
-            this.totalPrinted = totalPrinted;
-        }
-    
-        public void setTotalDropped(long totalDropped) {
-            this.totalDropped = totalDropped;
-        }
-    
-        public void setTotalPlanned(long totalPlanned) {
-            this.totalPlanned = totalPlanned;
+        public void setID(int printer_id) {
+            this.id = printer_id;
         }
 
-        public void setTimestampStart(long timestampStart) {
-            this.timestampStart = timestampStart;
-        }
-        public void setTimestampEnd(long timestampEnd) {
-            this.timestampEnd = timestampEnd;
+        public void setUserID(int user_id) {
+            this.user = user_id;
         }
     
+        public void setType(String printer_type) {
+            this.type = printer_type;
+        }
+    
+        public void setModel(String printer_model) {
+            this.model = printer_model;
+        }
+
+        public void setLastUpdate(int last_printer_connection) {
+            this.last_update = last_printer_connection;
+        }
+
+        public void setConnectionStart(int connection_start_value) {
+            this.connection_start = connection_start_value;
+        }
+    
+        public void setPrinterImage(String printer_image_link) {
+            this.printer_image = printer_image_link;
+        }
+
         @Override
         public String toString() {
             return "PrinterMetrics{" +
-                   "totalPrinted=" + totalPrinted +
-                   ", totalDropped=" + totalDropped +
-                   ", totalPlanned=" + totalPlanned +
-                   ", timestampStart=" + timestampStart +
-                   ", timestampEnd=" + timestampEnd +
+                   "id =" + id +
+                   ", type=" + type +
+                   ", model=" + model +
+                   ", last_update=" + last_update +
+                   ", printer_image=" + printer_image +
+                   ", connection_start=" + connection_start +
                    '}';
         }
     }

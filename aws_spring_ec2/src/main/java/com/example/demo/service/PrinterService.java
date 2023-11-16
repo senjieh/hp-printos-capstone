@@ -1,9 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Printer;
+import com.example.demo.model.PrinterKPI;
 import com.example.demo.repository.PrinterRepository;
-
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,11 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,36 +22,67 @@ public class PrinterService {
 
     @Autowired
     private PrinterRepository printerRepository;
-    
-    public List<Printer> fetchPrinterData(long start, long end, String interval, int printerId) {
-        List<Map<String, AttributeValue>> rawData = printerRepository.fetchPrinterData(start, end, printerId);
+
+    // Helper method to safely parse Long values from Object
+    private long parseLongFromObject(Object obj) {
+        if (obj instanceof Number) {
+            return ((Number) obj).longValue();
+        } else if (obj != null) {
+            return Long.parseLong(obj.toString());
+        } else {
+            throw new IllegalArgumentException("Null value cannot be converted to Long");
+        }
+    }
+
+    // Helper method to safely parse Int values from Object
+    private int parseIntFromObject(Object obj) {
+        if (obj instanceof Number) {
+            return ((Number) obj).intValue(); // Cast to int
+        } else if (obj != null) {
+            return Integer.parseInt(obj.toString()); // Parse as int
+        } else {
+            throw new IllegalArgumentException("Null value cannot be converted to Int");
+        }
+    }
+
+    private String parseStringFromObject(Object obj) {
+        if (obj != null) {
+            return obj.toString(); // Convert to String
+        } else {
+            throw new IllegalArgumentException("Null value cannot be converted to String");
+        }
+    }
+
+    public List<PrinterKPI> fetchPrinterData(long start, long end, String interval, int printerId) {
+        List<Map<String, Object>> rawData = printerRepository.fetchPrinterData(start, end, printerId);
+
 
         // Convert raw data to list of Printer KPIs
-        List<Printer> initialData = rawData.stream().map(item -> {
-            Printer printer = new Printer();
-            printer.setTotalPlanned(Long.parseLong(item.get("print_job_pages").n()));
-            printer.setTotalDropped(Long.parseLong(item.get("print_job_pages_dropped").n()));
-            printer.setTotalPrinted(Long.parseLong(item.get("print_job_pages_printed").n()));
-            printer.setTimestampStart(Long.parseLong(item.get("timestamp").n()));
+        List<PrinterKPI> initialData = rawData.stream().map(item -> {
+            PrinterKPI printer = new PrinterKPI();
+            printer.setTotalPlanned(parseLongFromObject(item.get("print_job_pages")));
+            printer.setTotalDropped(parseLongFromObject(item.get("print_job_pages_dropped")));
+            printer.setTotalPrinted(parseLongFromObject(item.get("print_job_pages_printed")));
+            printer.setTimestampStart(parseLongFromObject(item.get("timestamp")));
             return printer;
         }).collect(Collectors.toList());
 
         // Group by interval
-        Map<Long, List<Printer>> groupedData = new HashMap<>();
-        for (Printer printer : initialData) {
+        Map<Long, List<PrinterKPI>> groupedData = new HashMap<>();
+        for (PrinterKPI printer : initialData) {
             long keyTimestamp = getIntervalStartTimestamp(printer.getTimestampStart(), interval);
             groupedData.putIfAbsent(keyTimestamp, new ArrayList<>());
             groupedData.get(keyTimestamp).add(printer);
         }
 
         // Calculate aggregated KPIs for each interval
-        List<Printer> result = new ArrayList<>();
+        List<PrinterKPI> result = new ArrayList<>();
         for (long keyTimestamp : groupedData.keySet()) {
-            Printer aggregatedPrinter = new Printer();
+            PrinterKPI aggregatedPrinter = new PrinterKPI();
             aggregatedPrinter.setTimestampStart(keyTimestamp);
             aggregatedPrinter.setTimestampEnd(getIntervalEndTimestamp(keyTimestamp, interval));
 
-            for (Printer printer : groupedData.get(keyTimestamp)) {
+            for (PrinterKPI printer : groupedData.get(keyTimestamp)) {
                 aggregatedPrinter.setTotalPlanned(aggregatedPrinter.getTotalPlanned() + printer.getTotalPlanned());
                 aggregatedPrinter.setTotalDropped(aggregatedPrinter.getTotalDropped() + printer.getTotalDropped());
                 aggregatedPrinter.setTotalPrinted(aggregatedPrinter.getTotalPrinted() + printer.getTotalPrinted());
@@ -67,6 +93,29 @@ public class PrinterService {
 
         return result;
     }
+
+    private Printer convertMapToPrinter(Map<String, Object> item) {
+        Printer printer = new Printer();
+        printer.setID(parseIntFromObject(item.get("printer_id")));
+        printer.setUserID(parseIntFromObject(item.get("user_id")));
+        printer.setLastUpdate(parseIntFromObject(item.get("last_update")));
+        printer.setModel(parseStringFromObject(item.get("printer_model")));
+        printer.setType(parseStringFromObject(item.get("printer_type")));
+        printer.setPrinterImage(parseStringFromObject(item.get("printer_image")));
+        printer.setConnectionStart(parseIntFromObject(item.get("connection_start")));
+        return printer;
+    }
+
+    public List<Printer> fetchPrinterByPrinterId(Integer printerId) {
+        List<Map<String, Object>> rawData = printerRepository.fetchPrinterDetails(printerId);
+        return rawData.stream().map(this::convertMapToPrinter).collect(Collectors.toList());
+    }
+
+    public List<Printer> fetchPrintersByUserId(Integer userId) {
+        List<Map<String, Object>> rawData = printerRepository.fetchPrintersByUserId(userId);
+        return rawData.stream().map(this::convertMapToPrinter).collect(Collectors.toList());
+    }
+
 
     private long getIntervalStartTimestamp(long currentTimestamp, String interval) {
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(currentTimestamp), ZoneId.systemDefault());
