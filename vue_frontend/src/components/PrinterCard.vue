@@ -42,13 +42,13 @@ export default {
                         <img class="card-printer-image" :src="imageUrl" alt="printer-image">
                     </div>
                     <div>
-                        <h3 class="card-header">
+                        <h3 class="printer-card-header">
                             {{ printer_type }}
                         </h3>
-                        <p class="card-data">
+                        <p class="printer-card-data">
                             {{ printer_title }}
                         </p>
-                        <p class="card-sub">
+                        <p class="printer-card-sub">
                             {{ printer_status }}
                         </p>
                     </div>
@@ -93,21 +93,21 @@ export default {
 }
 
 
-.card-header{
+.printer-card-header{
     margin: 0.2rem;
     font-size: 1.1rem;
     font-weight: 300;
     font-family: 'FormaDJRMicro';
 }
 
-.card-data{
+.printer-card-data{
     margin: 0.2rem;
     font-size: 1.5rem;
     font-weight: 500;
     font-family: 'FormaDJRMicro';
 }
 
-.card-sub{
+.printer-card-sub{
     margin: 0.2rem;
     font-size: 0.9rem;
     font-weight: 300;

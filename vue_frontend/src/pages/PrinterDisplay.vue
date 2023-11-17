@@ -1,45 +1,23 @@
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router'; // Import useRoute to access router parameters
 import axios from 'axios';
 import defaultPrinterImage from '@/assets/printer.png';
 
 export default { 
     methods: {
-        startRealTimeUpdate() {
-            this.updateTimeElapsed(); // Initial update
-
-            // Set an interval to update the time elapsed every second
-            this.intervalId = setInterval(() => {
-                this.updateTimeElapsed();
-            }, 1000);
-        },
-        updateTimeElapsed() {
-            const currentTime = Math.floor(Date.now() / 1000); // Current time in Unix format
-            const timeElapsedInSeconds = currentTime - this.printerData.connection_start;
-
-            this.formattedTimeElapsed = this.formatTime(timeElapsedInSeconds);
-        },
-        formatTime(seconds) {
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const remainingSeconds = seconds % 60;
-
-            return [hours, minutes, remainingSeconds]
-                .map(unit => unit < 10 ? '0' + unit : unit) // Add leading zero if needed
-                .join(':');
-        },
         goToPage() {
             this.$router.push({ path: '/printers' });
         }
     },
     setup() {
         const formattedTimeElapsed = ref('');
-        const printerData = ref([]);
         const KPIData = ref([]);
         const dates = ref([]);
         const printerDetails = ref([]);
+        const printerStatus = ref('');
         const imageUrl = ref(defaultPrinterImage)
+        const intervalId = ref(null);
 
         const route = useRoute();
         const printer_id_param = computed(() => route.params.id);
@@ -100,10 +78,14 @@ export default {
             try {
                 const startTimestamp = new Date(dates.value[0]).getTime() / 1000;
                 const endTimestamp = new Date(dates.value[1]).getTime() / 1000;
+                console.log(startTimestamp);
+                console.log(endTimestamp);
                 const graph_url = `http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/printers/${printer_id}/print-data?date_start=${startTimestamp}&date_end=${endTimestamp}&interval=hour`;
                 const printer_data_url = `http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/printers/${printer_id}/print-data?date_start=${startTimestamp}&date_end=${endTimestamp}&interval=month`;
                 const printer_details_url = `http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/printers/${printer_id}/printer-details`;
 
+
+                console.log(printer_data_url);
                 const graph_url_response = await axios.get(graph_url);
                 console.log(graph_url_response.data);
                 chartData.value.labels = graph_url_response.data.map(item => convertTimestampToISO(item.timestampStart));
@@ -123,18 +105,57 @@ export default {
                 console.error("Error fetching data:", error);
             }
         };
+        
+        const printerStatusCalc = (lastUpdateTimestamp) => {
+        
+            const now = new Date();
+            const fiveMinutes = 300000; 
+            const lastUpdateTime = new Date(lastUpdateTimestamp);
+
+            const status = () => (now - lastUpdateTime <= fiveMinutes? 'Online' : 'Offline');
+
+            printerStatus.value = status();
+        };
+
+        const formatTime = (seconds) => {
+            const pad = (num) => (num < 10 ? '0' + num : num);
+
+            let hours = Math.floor(seconds / 3600);
+            let minutes = Math.floor((seconds % 3600) / 60);
+            let secondsLeft = seconds % 60;
+
+            return `${pad(hours)}:${pad(minutes)}:${pad(secondsLeft)}`;
+        };
+
+        const updateTimeElapsed = () => {
+            if (!printerDetails.value[0].connectionStart) {
+                formattedTimeElapsed.value = '00:00:00';
+                return;
+            }
+
+            const currentTime = Math.floor(Date.now() / 1000);
+
+            const timeElapsedInSeconds = currentTime - printerDetails.value[0].connectionStart;
+            formattedTimeElapsed.value = formatTime(timeElapsedInSeconds);
+        };
+
 
         onMounted(() => {
             const today = new Date();
             const oneMonthAgo = new Date(new Date().setMonth(today.getMonth() - 1));
 
+
             dates.value = [oneMonthAgo.toISOString().split('T')[0], today.toISOString().split('T')[0]];
             fetchData(printer_id_param.value);
-            console.log("fee")
-            console.log(printerDetails.value);
+            printerStatusCalc();
+            intervalId.value = (printerStatus.value == "Online" ? setInterval(updateTimeElapsed, 1000) : formattedTimeElapsed.value = "N/A" );
         });
 
-        return { dates, imageUrl, printerData, printerDetails, KPIData, chartData, formattedTimeElapsed, fetchData };
+        onUnmounted(() => {
+            clearInterval(intervalId.value);
+        });
+
+        return { dates, imageUrl, printerDetails, printerStatus, KPIData, chartData, formattedTimeElapsed, fetchData };
     }
 }
 </script>
@@ -152,7 +173,7 @@ export default {
                         <p class="printer-stat-text">Printer Status</p>
                     </div>
                     <div class="printer-stat">
-                        <p class="printer-stat-text"> {{ printerData }} </p>
+                        <p class="printer-stat-text"> {{ printerStatus }} </p>
                     </div>
                 </div>
                 <div class="printer-stat-row">
@@ -187,7 +208,7 @@ export default {
                     <template #content>
                         <h3 class="card-header">Pages Printed</h3>
                         <p class="card-data">
-                            {{  }} Pages  
+                            {{ KPIData }} Pages  
                         </p>
                         <p class="card-sub">
                             Up 52% from last month
