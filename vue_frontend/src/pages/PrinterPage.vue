@@ -60,7 +60,8 @@ export default {
 .printer-card-link {
     text-decoration: none;
     color: inherit;
-    width: 100%;
+    width: 25%;
+    margin-right: 50px;
 }
 
 .printer-view-title{

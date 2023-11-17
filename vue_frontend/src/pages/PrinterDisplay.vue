@@ -93,7 +93,7 @@ export default {
 
                 const printer_data_url_response = await axios.get(printer_data_url);
                 console.log(printer_data_url_response.data);
-                KPIData.value = printer_data_url_response.data;
+                KPIData.value = printer_data_url_response.data[0];
 
                 const printer_details_url_response = await axios.get(printer_details_url);
                 printerDetails.value = printer_details_url_response.data;
@@ -206,9 +206,20 @@ export default {
             <div class="card-row">
                 <PrimeCard class="card-style">
                     <template #content>
-                        <h3 class="card-header">Pages Printed</h3>
+                        <h3 class="card-header">Total Pages</h3>
                         <p class="card-data">
-                            {{ KPIData }} Pages  
+                            {{ KPIData.totalPlanned }} Pages  
+                        </p>
+                        <p class="card-sub">
+                            Up 52% from last month
+                        </p>
+                    </template>
+                </PrimeCard>
+                <PrimeCard class="card-style">
+                    <template #content>
+                        <h3 class="card-header">Pages Dropped</h3>
+                        <p class="card-data">
+                            {{ KPIData.totalDropped }} Pages  
                         </p>
                         <p class="card-sub">
                             Up 52% from last month
@@ -219,18 +230,7 @@ export default {
                     <template #content>
                         <h3 class="card-header">Pages Printed</h3>
                         <p class="card-data">
-                            5027 Pages  
-                        </p>
-                        <p class="card-sub">
-                            Up 52% from last month
-                        </p>
-                    </template>
-                </PrimeCard>
-                <PrimeCard class="card-style">
-                    <template #content>
-                        <h3 class="card-header">Pages Printed</h3>
-                        <p class="card-data">
-                            5027 Pages  
+                            {{ KPIData.totalPrinted }} Pages  
                         </p>
                         <p class="card-sub">
                             Up 52% from last month

@@ -33,45 +33,37 @@ export default {
 </script>
 
 <template>
-    <div class="printer-card-view">
-        <PrimeCard class="printer-card-style">
-            <template #content>
-                <div class="h-container">
-                    <div class="card-printer-image-container">
-                        <!-- Use imageUrl for the image source -->
-                        <img class="card-printer-image" :src="imageUrl" alt="printer-image">
-                    </div>
-                    <div>
-                        <h3 class="printer-card-header">
-                            {{ printer_type }}
-                        </h3>
-                        <p class="printer-card-data">
-                            {{ printer_title }}
-                        </p>
-                        <p class="printer-card-sub">
-                            {{ printer_status }}
-                        </p>
-                    </div>
+    <PrimeCard class="printer-card-style">
+        <template #content>
+            <div class="h-container">
+                <div class="card-printer-image-container">
+                    <!-- Use imageUrl for the image source -->
+                    <img class="card-printer-image" :src="imageUrl" alt="printer-image">
                 </div>
-            </template>
-        </PrimeCard>
-    </div>
+                <div>
+                    <h3 class="printer-card-header">
+                        {{ printer_type }}
+                    </h3>
+                    <p class="printer-card-data">
+                        {{ printer_title }}
+                    </p>
+                    <p class="printer-card-sub">
+                        {{ printer_status }}
+                    </p>
+                </div>
+            </div>
+        </template>
+    </PrimeCard>
 </template>
 
 <style>
 .card-printer-image-container{
-    width: 33%;
+    width: 100%;
     margin: 1rem;
-    margin-right: 50px;
 }
 .card-printer-image{
-    width: 100%;
+    width: 50%;
     margin: 0px;
-}
-.printer-card-view{
-    min-width: 350px;
-    width: 25%;
-    margin-right: 1rem;
 }
 
 
