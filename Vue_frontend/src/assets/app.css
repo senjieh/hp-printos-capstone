@@ -27,6 +27,17 @@ body {
     font-family: 'FormaDJRMicro';
     margin: 0px;
 }
+.main-h-container{
+    margin: 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.main-h-container.dark-mode{
+    background-color: #060606;
+    color: white;
+}
+
 
 h1 {
     color: white;

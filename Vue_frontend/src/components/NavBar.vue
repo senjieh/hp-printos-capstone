@@ -2,7 +2,15 @@
 import hplogo from '@/assets/hplogo.png';
 import homepageicon from '@/assets/homepageicon.png';
 import printericon from '@/assets/printericon.png';
+import { state } from '@/store/store.js'; 
+
 export default {
+  props: {
+    dark_mode_setting: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       logoImagePath: hplogo,
@@ -17,12 +25,18 @@ export default {
     goToPrinterPage() {
       this.$router.push('/printers');
     }
+  },
+  setup() {
+    const toggleDarkMode = () => {
+      state.isDarkMode = !state.isDarkMode; // Toggle dark mode in global state
+    };
+    return { state, toggleDarkMode };
   }
 
 }
 </script>
 <template>
-  <div class="nav-bar-div">
+  <div class="nav-bar-div" :class="{ 'dark-mode': dark_mode_setting }">
     <img class="nav-bar-logo" :src="logoImagePath" alt="hp-logo">
     <button class="nav-button" @click="goToHomePage">
         <img class="nav-bar-icon" :src="homepageImagePath" alt="homepage-icon">
@@ -30,6 +44,7 @@ export default {
     <button class="nav-button" @click="goToPrinterPage">
         <img class="nav-bar-icon" :src="printerImagePath" alt="printer-icon">
     </button>
+    <InputSwitch v-model="isDarkMode" @change="toggleDarkMode"></InputSwitch>
   </div>
 </template>
 
@@ -49,6 +64,14 @@ export default {
     -webkit-box-shadow: -2px 2px 20px 5px rgba(0,0,0,0.05);
     -moz-box-shadow: -2px 2px 20px 5px rgba(0,0,0,0.05);
 }
+
+.nav-bar-div.dark-mode{
+    background-color: #000000;
+    box-shadow: -2px 2px 20px 5px rgba(255, 255, 255, 0.05);
+    -webkit-box-shadow: -2px 2px 20px 5px rgba(255, 255, 255, 0.05);
+    -moz-box-shadow: -2px 2px 20px 5px rgba(255, 255, 255, 0.05);
+}
+
 .nav-bar-logo{
     width: 45px;
     margin-top: 20px;
@@ -79,5 +102,18 @@ export default {
     background-color: #f0f0f0;
 }
 
+/* Dark mode specific styles */
+.nav-bar-div.dark-mode {
+  background-color: #060606; /* Dark background */
+  /* Add any other style changes needed for dark mode here */
+}
 
+.nav-bar-div.dark-mode .nav-button {
+  color: #fff; /* Light text for dark background */
+  background-color: #333; /* Dark button background */
+}
+
+.nav-bar-div.dark-mode .nav-button:hover {
+  background-color: #444; /* Slightly lighter background on hover */
+}
 </style>

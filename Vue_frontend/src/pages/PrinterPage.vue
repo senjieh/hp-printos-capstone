@@ -4,6 +4,12 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 export default {
+    props: {
+        dark_mode_setting: {
+            type: Boolean,
+            default: false
+        }
+    },
     components: {
         PrinterCard,
     },
@@ -30,7 +36,7 @@ export default {
 </script>
 
 <template>
-    <div class="printer-view-container">
+    <div :class="{ 'dark-mode': dark_mode_setting }" class="printer-view-container" >
         <div>
             <h2 class="printer-view-title">Printers</h2>
         </div>
@@ -85,6 +91,10 @@ export default {
     width: 100%
 }
 
+.printer-view-container.dark-mode{
+    color: #ffffff;
+    background-color: #060606;
+}
 
 
 

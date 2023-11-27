@@ -9,6 +9,7 @@ import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
 import Chart from 'primevue/chart';
 import Card from 'primevue/card';
+import InputSwitch from 'primevue/inputswitch';
 
 // Import styles
 import './assets/app.css';
@@ -28,6 +29,7 @@ const routes = [
     path: '/printers',
     name: 'PrinterList',
     component: PrinterPage,
+    props: true
   },
   {
     path: '/printers/:id',
@@ -56,6 +58,7 @@ app.component('PrimeCard', Card);
 app.component('PrimeCalendar', Calendar);
 app.component('PrimeButton', Button);
 app.component('InputText', InputText);
+app.component('InputSwitch', InputSwitch);
 
 // Mount the app
 app.mount('#app');
