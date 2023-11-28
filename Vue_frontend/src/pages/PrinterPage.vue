@@ -2,6 +2,7 @@
 import PrinterCard from '@/components/PrinterCard.vue';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { state } from '@/store/store.js'; 
 
 export default {
     props: {
@@ -30,7 +31,7 @@ export default {
 
         onMounted(fetchData);
 
-        return { printers };
+        return { printers, state };
     }
 }
 </script>
@@ -49,6 +50,7 @@ export default {
                 v-slot="{ navigate }">
                 <div class="printer-card-link" @click="navigate">
                     <PrinterCard
+                        :dark_mode_setting = state.isDarkMode
                         :printer_status="printer.status" 
                         :printer_title="printer.model" 
                         :printer_image="printer.printerImage" 

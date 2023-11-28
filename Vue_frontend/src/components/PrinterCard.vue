@@ -3,6 +3,10 @@ import defaultPrinterImage from '@/assets/printer.png';
 
 export default {
     props: {
+        dark_mode_setting: {
+            type: Boolean,
+            default: false
+        },
         printer_status: {
             type: String,
             default: "Offline"
@@ -33,9 +37,9 @@ export default {
 </script>
 
 <template>
-    <PrimeCard class="printer-card-style">
+    <PrimeCard :class="{ 'dark-mode': dark_mode_setting }" class="printer-card-style">
         <template #content>
-            <div class="h-container">
+            <div :class="{ 'dark-mode': dark_mode_setting }" class="h-container">
                 <div class="card-printer-image-container">
                     <!-- Use imageUrl for the image source -->
                     <img class="card-printer-image" :src="imageUrl" alt="printer-image">
@@ -66,7 +70,6 @@ export default {
     margin: 0px;
 }
 
-
 .printer-card-style{
     width: 100%;
     min-width: 200px;
@@ -83,7 +86,6 @@ export default {
 .printer-card-style:hover{
     background-color: #e9e9e9;
 }
-
 
 .printer-card-header{
     margin: 0.2rem;
@@ -104,6 +106,12 @@ export default {
     font-size: 0.9rem;
     font-weight: 300;
     font-family: 'FormaDJRMicro';
+}
+
+/* Dark mode styling */
+.printer-card-style.dark-mode{
+    background-color:#323232;
+    color: #ffffff;
 }
 
 </style>
