@@ -3,8 +3,15 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router'; // Import useRoute to access router parameters
 import axios from 'axios';
 import defaultPrinterImage from '@/assets/printer.png';
+import { state } from '@/store/store.js';
 
 export default { 
+    props: {
+        dark_mode_setting: {
+            type: Boolean,
+            default: false
+        }
+    },
     methods: {
         goToPage() {
             this.$router.push({ path: '/printers' });
@@ -39,14 +46,16 @@ export default {
                         ticks: {
                             font: {
                                 size: 40, 
-                            }
+                            },
+                            color: '#ffffff', // this should turn x-axis lines to be white, but does not work
                         },
                     },
                     y: {
                         ticks: {
                             font: {
                                 size: 40, 
-                            }
+                            },
+                            color: "#00FF00", // this should turn y-axis lines to be green, but does not work
                         },
                     },
                 },
@@ -141,9 +150,9 @@ export default {
 
 
         onMounted(() => {
+            /* This is where the date range is auto-populated */
             const today = new Date();
             const oneMonthAgo = new Date(new Date().setMonth(today.getMonth() - 1));
-
 
             dates.value = [oneMonthAgo.toISOString().split('T')[0], today.toISOString().split('T')[0]];
             fetchData(printer_id_param.value);
@@ -155,13 +164,13 @@ export default {
             clearInterval(intervalId.value);
         });
 
-        return { dates, imageUrl, printerDetails, printerStatus, KPIData, chartData, formattedTimeElapsed, fetchData };
+        return { state, dates, imageUrl, printerDetails, printerStatus, KPIData, chartData, formattedTimeElapsed, fetchData };
     }
 }
 </script>
 
 <template>
-    <div class="hp-printer-page">
+    <div :class="{ 'dark-mode': state.isDarkMode }" class="hp-printer-page">
         <div class="print-div">
             <button class="blue-button" @click="goToPage">Printers</button>
             <h2 class="printer-type">{{ printerDetails.type }}</h2>
@@ -204,7 +213,7 @@ export default {
         </div>
         <div class="stat-div">
             <div class="card-row">
-                <PrimeCard class="card-style">
+                <PrimeCard :class="{ 'dark-mode': state.isDarkMode }" class="card-style" v-if="KPIData">
                     <template #content>
                         <h3 class="card-header">Total Pages</h3>
                         <p class="card-data">
@@ -215,7 +224,7 @@ export default {
                         </p>
                     </template>
                 </PrimeCard>
-                <PrimeCard class="card-style">
+                <PrimeCard :class="{ 'dark-mode': state.isDarkMode }" class="card-style" v-if="KPIData">
                     <template #content>
                         <h3 class="card-header">Pages Dropped</h3>
                         <p class="card-data">
@@ -226,7 +235,7 @@ export default {
                         </p>
                     </template>
                 </PrimeCard>
-                <PrimeCard class="card-style">
+                <PrimeCard :class="{ 'dark-mode': state.isDarkMode }" class="card-style" v-if="KPIData">
                     <template #content>
                         <h3 class="card-header">Pages Printed</h3>
                         <p class="card-data">
@@ -239,11 +248,10 @@ export default {
                 </PrimeCard>
 
             </div>
-            <PrimeCard class="card-style">
+            <PrimeCard :class="{ 'dark-mode': state.isDarkMode }" class="card-style">
                     <template #content>
                         <PrimeCalendar v-model="dates" selectionMode="range" :manualInput="false" />
                         <PrimeChart type="line" :data="chartData"></PrimeChart>
-
                     </template>
             </PrimeCard>
         </div>
@@ -283,6 +291,11 @@ export default {
     width: 95%;
     max-height: 100vh;
     overflow: scroll;
+}
+
+.hp-printer-page.dark-mode{
+    background-color: #060606;
+    color: #ffffff;
 }
 
 .card-row{
@@ -338,6 +351,11 @@ export default {
     box-shadow: -2px 2px 20px 5px rgba(0,0,0,0.05);
     -webkit-box-shadow: -2px 2px 20px 5px rgba(0,0,0,0.05);
     -moz-box-shadow: -2px 2px 20px 5px rgba(0,0,0,0.05);
+}
+
+.card-style.dark-mode {
+    background-color:#323232;
+    color: #ffffff;
 }
 
 .card-header{

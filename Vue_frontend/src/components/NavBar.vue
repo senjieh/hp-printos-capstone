@@ -2,6 +2,7 @@
 import hplogo from '@/assets/hplogo.png';
 import homepageicon from '@/assets/homepageicon.png';
 import printericon from '@/assets/printericon.png';
+// import darkmodeicon from @/assets/
 import { state } from '@/store/store.js'; 
 
 export default {
@@ -16,6 +17,7 @@ export default {
       logoImagePath: hplogo,
       homepageImagePath: homepageicon,
       printerImagePath: printericon
+      // darkModeImagePath: darkmodeicon
     }
   },
   methods: {
@@ -44,7 +46,8 @@ export default {
     <button class="nav-button" @click="goToPrinterPage">
         <img class="nav-bar-icon" :src="printerImagePath" alt="printer-icon">
     </button>
-    <InputSwitch v-model="isDarkMode" @change="toggleDarkMode"></InputSwitch>
+    <InputSwitch class="darkmode-switch" v-model="isDarkMode" @change="toggleDarkMode">
+    </InputSwitch>
   </div>
 </template>
 
@@ -115,5 +118,9 @@ export default {
 
 .nav-bar-div.dark-mode .nav-button:hover {
   background-color: #444; /* Slightly lighter background on hover */
+}
+
+.darkmode-switch {
+  margin-top: 20px;  
 }
 </style>
