@@ -36,6 +36,8 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- TODO: add spring security dependency -->
     </dependencies>
 
     <build>
