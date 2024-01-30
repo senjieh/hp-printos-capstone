@@ -21,6 +21,7 @@ import 'primeicons/primeicons.css';
 import HomePage from './pages/HomePage.vue';
 import PrinterPage from './pages/PrinterPage.vue';
 import PrinterDisplay from './pages/PrinterDisplay.vue';
+import LoginPage from './pages/LoginPage.vue';
 
 // Define routes
 const routes = [
@@ -35,6 +36,12 @@ const routes = [
     path: '/printers/:id',
     name: 'PrinterDetails',
     component: PrinterDisplay,
+    props: true
+  },
+  {
+    path: '/login',
+    name: 'LoginPage',
+    component: LoginPage,
     props: true
   }
 ];
