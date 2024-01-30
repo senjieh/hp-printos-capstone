@@ -25,5 +25,4 @@ public class UserController {
         return printerService.fetchPrintersByUserId(id);
     }
 
-
 }

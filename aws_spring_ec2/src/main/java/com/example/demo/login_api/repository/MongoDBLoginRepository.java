@@ -27,13 +27,17 @@ public class MongoDBLoginRepository implements LoginRepository {
         MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
 
         List<Map<String, Object>> results = new ArrayList<>();
+        /*
+         * query checking whether given username and password parameters
+         * exist in our MongoDB database
+         */
         collection.find(
                 Filters.and(
                         Filters.eq("username", username),
                         Filters.eq("password", password)))
                 .into(results);
 
-        System.out.println(results);
+        // System.out.println(results); // for debugging
         return results;
     }
 }

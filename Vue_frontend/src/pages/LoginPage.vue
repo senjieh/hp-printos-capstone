@@ -36,7 +36,8 @@ export default {
   methods: {
     async onSubmit() {
       try {
-        const url = 'http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/printers/1/printer-details'; // Replace with your actual URL
+        //const url = 'http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/printers/1/printer-details'; // Replace with your actual URL
+        const url = 'http://localhost:8080/login' // local url: change as needed
         const response = await axios.post(url, {
           username: this.username,
           password: this.password

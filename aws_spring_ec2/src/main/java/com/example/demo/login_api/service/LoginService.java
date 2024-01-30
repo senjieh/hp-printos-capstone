@@ -15,13 +15,11 @@ public class LoginService {
     @Autowired
     private LoginRepository loginRepository;
 
-    public List<Map<String, Object>> fetchLoginData(String username, String password) {
+    public boolean fetchLoginData(String username, String password) {
         List<Map<String, Object>> rawData = loginRepository.fetchLoginData(username, password);
 
-        // TODO: clean the data from database
-
-        // Map<String, Object> element0 = rawData.get(0);
-        // String usernameStr = element0.get()
-        return rawData;
+        // TODO: include some logic that handles if there are multiple instances of a
+        // user
+        return (rawData.size() >= 1);
     }
 }

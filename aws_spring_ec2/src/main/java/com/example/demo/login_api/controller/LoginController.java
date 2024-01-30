@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 /*
  * @PostMapping - does a post operation to a given path
  * login() - takes data in the format of LoginRequest object, and returns a ResponseEntity
- * ResponseEntities are essentially an HTTP payload that can contain status code
+ * ResponseEntities are essentially an HTTP payload that can contain status code, and a body
  */
 @RestController
 public class LoginController {
@@ -32,11 +32,14 @@ public class LoginController {
         String password = loginRequest.getPassword();
 
         // pass username and password to LoginService
-        List<Map<String, Object>> data = loginService.fetchLoginData(username, password);
+        if (loginService.fetchLoginData(username, password)) {
+            return ResponseEntity.ok().body("Login successful");
+        }
+
         /*
          * .ok() makes the response Entity status code 200
          * .body() is the contents we return to the frontend
          */
-        return ResponseEntity.ok().body(data); // returned to frontend
+        return ResponseEntity.status(401).body("Login unsuccessful");
     }
 }
