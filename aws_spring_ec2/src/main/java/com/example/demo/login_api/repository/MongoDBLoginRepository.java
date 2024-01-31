@@ -26,6 +26,12 @@ public class MongoDBLoginRepository implements LoginRepository {
         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
         MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
 
+        // Sanitize the user input with only alphanumerics
+        // Need to parameterize the query but still don't
+        // know how to do that here
+        username.replaceAll("[^a-zA-Z0-9]", "");
+        password.replaceAll("[^a-zA-Z0-9]", "");
+
         List<Map<String, Object>> results = new ArrayList<>();
         /*
          * query checking whether given username and password parameters

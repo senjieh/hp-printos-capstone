@@ -3,15 +3,16 @@ package com.example.demo.login_api.controller;
 import com.example.demo.login_api.model.LoginRequest;
 import com.example.demo.login_api.service.LoginService;
 
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
 
 /*
  * @PostMapping - does a post operation to a given path
@@ -26,7 +27,14 @@ public class LoginController {
 
     /* @RequestBody - basically trying to get that data from frontend */
     @PostMapping("/login")
-    public ResponseEntity<?> response(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> response(@RequestBody @Valid LoginRequest loginRequest, BindingResult bindingResult) {
+        
+        // Error on the username and passwords
+        if (bindingResult.hasErrors()) {
+            // Throw a bad request
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
+       
         // get username and password from loginRequest
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
