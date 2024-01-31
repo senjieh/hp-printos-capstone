@@ -41,6 +41,10 @@ public class LoginController {
 
         // pass username and password to LoginService
         if (loginService.fetchLoginData(username, password)) {
+
+            //log new session in db
+            loginService.logSessionToken(username);
+
             return ResponseEntity.ok().body("Login successful");
         }
 

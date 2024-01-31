@@ -20,6 +20,7 @@ public class MongoDBLoginRepository implements LoginRepository {
 
     private static final String DATABASE_NAME = "hp_print_os";
     private static final String COLLECTION_NAME = "users";
+    private static final String COLLECTION_SESSION = "sessions";
 
     @Override
     public List<Map<String, Object>> fetchLoginData(String username, String password) {
@@ -45,5 +46,43 @@ public class MongoDBLoginRepository implements LoginRepository {
 
         // System.out.println(results); // for debugging
         return results;
+    }
+
+    @Override
+    public String fetchUserID(String username){
+        MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
+
+        List<Map<String, Object>> results = new ArrayList<>();
+        /*
+         * query checking whether given username and password parameters
+         * exist in our MongoDB database
+         */
+        collection.find(Filters.eq("username", username).projection(Projections.include("_id"))).into(results);
+
+        String primaryKey = null;
+
+        if (!results.isEmpty()) {
+            Map<String, Object> document = results.get(0);
+            primaryKey = document.get("_id").toString();
+        }
+
+        // System.out.println(results); // for debugging
+        return primaryKey;
+    }
+
+    @Override
+    public void logSessionToken(String uID){
+        MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> collection = database.getCollection(COLLECTION_SESSION);
+
+        Document document = new Document();
+        document.append("uID", uID);
+        document.append("someKey", "thisString"); // Replace "someKey" with the actual key you want to use
+
+        // Inserting the document into the collection
+        collection.insertOne(document);
+
+
     }
 }

@@ -22,4 +22,13 @@ public class LoginService {
         // user
         return (rawData.size() >= 1);
     }
+
+    public boolean logSessionToken(String username){
+
+        String userID = loginRepository.fetchUserID(username);
+
+        System.out.println(userID);
+
+        loginRepository.logSessionToken(userID);
+    }
 }
