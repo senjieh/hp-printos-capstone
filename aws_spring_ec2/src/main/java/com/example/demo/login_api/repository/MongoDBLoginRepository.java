@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,8 @@ import org.bson.Document;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Repository
 public class MongoDBLoginRepository implements LoginRepository {
@@ -58,7 +61,7 @@ public class MongoDBLoginRepository implements LoginRepository {
          * query checking whether given username and password parameters
          * exist in our MongoDB database
          */
-        collection.find(Filters.eq("username", username).projection(Projections.include("_id"))).into(results);
+        collection.find(Filters.eq("username", username)).projection(Projections.include("_id")).into(results);
 
         String primaryKey = null;
 
@@ -78,7 +81,7 @@ public class MongoDBLoginRepository implements LoginRepository {
 
         Document document = new Document();
         document.append("uID", uID);
-        document.append("someKey", "thisString"); // Replace "someKey" with the actual key you want to use
+        document.append("DateTime", LocalDateTime.now()); // Replace "someKey" with the actual key you want to use
 
         // Inserting the document into the collection
         collection.insertOne(document);

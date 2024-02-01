@@ -23,11 +23,9 @@ public class LoginService {
         return (rawData.size() >= 1);
     }
 
-    public boolean logSessionToken(String username){
+    public void logSessionToken(String username){
 
         String userID = loginRepository.fetchUserID(username);
-
-        System.out.println(userID);
 
         loginRepository.logSessionToken(userID);
     }
