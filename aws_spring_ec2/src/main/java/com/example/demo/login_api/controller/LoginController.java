@@ -32,7 +32,7 @@ public class LoginController {
         // Error on the username and passwords
         if (bindingResult.hasErrors()) {
             // Throw a bad request
-            return ResponseEntity.badRequest().body("Login unsuccessful");
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
        
         // get username and password from loginRequest
