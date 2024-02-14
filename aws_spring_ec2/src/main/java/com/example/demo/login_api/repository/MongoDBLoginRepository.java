@@ -9,12 +9,17 @@ import com.mongodb.client.model.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Random;
 import org.bson.Document;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Repository
 public class MongoDBLoginRepository implements LoginRepository {
@@ -75,17 +80,28 @@ public class MongoDBLoginRepository implements LoginRepository {
     }
 
     @Override
-    public void logSessionToken(String uID){
+    public String logSessionToken(String uID){
         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
         MongoCollection<Document> collection = database.getCollection(COLLECTION_SESSION);
 
         Document document = new Document();
-        document.append("uID", uID);
-        document.append("DateTime", LocalDateTime.now()); // Replace "someKey" with the actual key you want to use
 
-        // Inserting the document into the collection
-        collection.insertOne(document);
+        try{
+            SecureRandom secureRandom = SecureRandom.getInstanceStrong();
+            byte[] bytes = secureRandom.generateSeed(16);
+            secureRandom.nextBytes(bytes);
+            String str = new String(bytes, StandardCharsets.UTF_8);
+            document.append("uID", uID);
+            document.append("SessionID", str);
+            collection.insertOne(document);
 
+            return(str);
+           
+        } catch(NoSuchAlgorithmException ex){
+            Logger.getLogger(MongoDBLoginRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return("Error: No Session Token was created.");
 
     }
 }

@@ -23,10 +23,12 @@ public class LoginService {
         return (rawData.size() >= 1);
     }
 
-    public void logSessionToken(String username){
+    public String logSessionToken(String username){
 
         String userID = loginRepository.fetchUserID(username);
 
-        loginRepository.logSessionToken(userID);
+        String sessionToken = loginRepository.logSessionToken(userID);
+
+        return(sessionToken);
     }
 }

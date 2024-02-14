@@ -9,6 +9,6 @@ public interface LoginRepository {
 
     String fetchUserID(String username);
 
-    void logSessionToken(String sessionID);
+    String logSessionToken(String sessionID);
 }
 

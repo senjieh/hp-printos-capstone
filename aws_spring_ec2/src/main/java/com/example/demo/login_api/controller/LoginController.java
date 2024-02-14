@@ -43,9 +43,10 @@ public class LoginController {
         if (loginService.fetchLoginData(username, password)) {
 
             //log new session in db
-            loginService.logSessionToken(username);
+            String sessionToken = loginService.logSessionToken(username);
+            String returnString = "Session Token: " + sessionToken;
 
-            return ResponseEntity.ok().body("Login successful");
+            return ResponseEntity.ok().body(returnString);
         }
 
         /*
