@@ -2,10 +2,13 @@ package com.example.demo.login_api.controller;
 
 import com.example.demo.login_api.model.LoginRequest;
 import com.example.demo.login_api.service.LoginService;
+import com.google.common.hash.Hashing;
 
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +42,20 @@ public class LoginController {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
+        // Hash the input to compare against database
+        String hashedUser = Hashing.sha256()
+        .hashString(username, StandardCharsets.UTF_8)
+        .toString();
+        
+        String hashedPass = Hashing.sha256().
+        hashString(password, StandardCharsets.UTF_8).
+        toString();
+
         // pass username and password to LoginService
-        if (loginService.fetchLoginData(username, password)) {
+        if (loginService.fetchLoginData(hashedUser, hashedPass)) {
 
             //log new session in db
-            loginService.logSessionToken(username);
+            loginService.logSessionToken(hashedUser);
 
             return ResponseEntity.ok().body("Login successful");
         }

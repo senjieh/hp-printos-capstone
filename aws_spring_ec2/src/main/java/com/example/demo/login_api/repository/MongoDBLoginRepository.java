@@ -27,14 +27,11 @@ public class MongoDBLoginRepository implements LoginRepository {
 
     @Override
     public List<Map<String, Object>> fetchLoginData(String username, String password) {
+
+        // Move this outside of this function in the future
+        // Possibly have it so it tries to connect on startup
         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
         MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
-
-        // Sanitize the user input with only alphanumerics
-        // Need to parameterize the query but still don't
-        // know how to do that here
-        username.replaceAll("[^a-zA-Z0-9]", "");
-        password.replaceAll("[^a-zA-Z0-9]", "");
 
         List<Map<String, Object>> results = new ArrayList<>();
         /*
