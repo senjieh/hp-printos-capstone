@@ -56,7 +56,7 @@ public class LoginController {
 
             //log new session in db
             String sessionToken = loginService.logSessionToken(hashedUser);
-            String returnString = "Session Token: " + sessionToken;
+            String returnString = "Successful Login.\nSession Token: " + sessionToken;
 
             return ResponseEntity.ok().body(returnString);
         }
