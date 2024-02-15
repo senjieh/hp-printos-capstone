@@ -30,12 +30,14 @@ const routes = [
     path: '/printers',
     name: 'PrinterList',
     component: PrinterPage,
+    meta: { requiresAuth: true },
     props: true
   },
   {
     path: '/printers/:id',
     name: 'PrinterDetails',
     component: PrinterDisplay,
+    meta: { requiresAuth: true },
     props: true
   },
   {
@@ -50,6 +52,32 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+function getCookie(name) {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for(let i=0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+
+// Adding beforeEach navigation guard to the router
+router.beforeEach((to, from, next) => {
+  // Assuming 'user-token' is the name of your auth cookie
+  const userToken = getCookie('user-token');
+
+  if (to.matched.some(record => record.meta.requiresAuth) && !userToken) {
+    // User is trying to access a protected route without being authenticated
+    next({ name: 'LoginPage' });
+  } else {
+    // Proceed as normal
+    next();
+  }
 });
 
 // Create app instance

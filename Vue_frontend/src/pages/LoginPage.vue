@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div :class="{ 'dark-mode': dark_mode_setting }" class="login-container">
     <!-- Error Message Dropdown -->
     <div v-if="errorMessage" class="error-dropdown">
       {{ errorMessage }}
@@ -25,7 +25,14 @@
 <script>
 import axios from 'axios';
 
+
 export default {
+  props: {
+    dark_mode_setting: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       username: '',
@@ -34,30 +41,38 @@ export default {
     }
   },
   methods: {
+    setCookie(name, value, days) {
+      let expires = "";
+      if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    },
+
     async onSubmit() {
       try {
-        //const url = 'http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/printers/1/printer-details'; // Replace with your actual URL
-        const url = 'http://localhost:8080/login' // local url: change as needed
+        const url = 'http://localhost:8080/login';
         const response = await axios.post(url, {
           username: this.username,
           password: this.password
         });
+        // Set a cookie without a library
+        this.setCookie('user-token', response.data.token, 7); // Set a cookie for 7 days
 
-        console.log(response.data);
+        // Redirect after successful login
+        this.$router.push('/');
       } catch (error) {
-        // Check if the error is a response from the server
         if (error.response) {
-          // Server responded with a status code outside the 2xx range
           this.errorMessage = error.response.data.message || `Error: ${error.response.status}`;
         } else if (error.request) {
-          // The request was made but no response was received
           this.errorMessage = "No response from server";
         } else {
-          // Something happened in setting up the request that triggered an Error
           this.errorMessage = "Error in sending request";
         }
 
-        setTimeout(() => { this.errorMessage = ''; }, 3000); // Clear the message after 3 seconds
+        setTimeout(() => { this.errorMessage = ''; }, 3000);
       }
     }
   }
@@ -72,6 +87,11 @@ export default {
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  color: black;
+}
+
+.login-container.dark-mode {
+  color: white;
 }
 
 .form-group {
