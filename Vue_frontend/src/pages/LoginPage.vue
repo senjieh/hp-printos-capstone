@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 
 
 export default {
@@ -53,13 +53,15 @@ export default {
 
     async onSubmit() {
       try {
-        const url = 'http://localhost:8080/login';
-        const response = await axios.post(url, {
-          username: this.username,
-          password: this.password
-        });
+        // const url = 'http://localhost:8080/login';
+        // const response = await axios.post(url, {
+        //   username: this.username,
+        //   password: this.password
+        // });
+        // console.log(response);
         // Set a cookie without a library
-        this.setCookie('user-token', response.data.token, 7); // Set a cookie for 7 days
+        this.setCookie('user-token', "testtoken", 7); // Set a cookie for 7 days
+        //this.setCookie('user-token', response.data.token, 7); // Set a cookie for 7 days
 
         // Redirect after successful login
         this.$router.push('/');
