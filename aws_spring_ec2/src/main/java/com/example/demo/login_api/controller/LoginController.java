@@ -16,7 +16,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 /*
  * @PostMapping - does a post operation to a given path
  * login() - takes data in the format of LoginRequest object, and returns a ResponseEntity
@@ -28,33 +27,65 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-    /* @RequestBody - basically trying to get that data from frontend */
+    @PostMapping("/registration")
+    public ResponseEntity<?> register_reponse(@RequestBody @Valid LoginRequest registrationRequest,
+            BindingResult bindingResult) {
+        // System.out.println(bindingResult.getErrorCount());
+        if (bindingResult.hasErrors()) {
+            // Throw a bad request
+            return ResponseEntity.badRequest()
+                    .body("Login unsuccessful " + bindingResult.getErrorCount() + bindingResult.getAllErrors());
+        }
+
+        String username = registrationRequest.getUsername();
+        String password = registrationRequest.getPassword();
+
+        // sanitize email and password (username has valid email ender, both password
+        // and email contain alphanumeric characters)
+
+        // hash the email and password
+
+        if (loginService.registerUser(username, password)) {
+
+            // log new session in db
+            // String sessionToken = loginService.logSessionToken(hashedUser);
+            // String returnString = "Successful Login.\nSession Token: " + sessionToken;
+
+            return ResponseEntity.ok().body("Registration successful");
+        }
+
+        return ResponseEntity.status(401).body("Registration unsuccessful");
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<?> response(@RequestBody @Valid LoginRequest loginRequest, BindingResult bindingResult) {
-        
+    /*
+     * @RequestBody - basically trying to get that data from frontend
+     * BindingResult -
+     */
+    public ResponseEntity<?> login_response(@RequestBody @Valid LoginRequest loginRequest,
+            BindingResult bindingResult) {
+
         // Error on the username and passwords
         if (bindingResult.hasErrors()) {
             // Throw a bad request
             return ResponseEntity.badRequest().body("Login unsuccessful");
         }
-       
+
         // get username and password from loginRequest
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
         // Hash the input to compare against database
         String hashedUser = Hashing.sha256()
-        .hashString(username, StandardCharsets.UTF_8)
-        .toString();
-        
-        String hashedPass = Hashing.sha256().
-        hashString(password, StandardCharsets.UTF_8).
-        toString();
+                .hashString(username, StandardCharsets.UTF_8)
+                .toString();
+
+        String hashedPass = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
 
         // pass username and password to LoginService
         if (loginService.fetchLoginData(hashedUser, hashedPass)) {
 
-            //log new session in db
+            // log new session in db
             String sessionToken = loginService.logSessionToken(hashedUser);
             String returnString = "Successful Login.\nSession Token: " + sessionToken;
 

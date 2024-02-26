@@ -27,8 +27,29 @@ public class MongoDBLoginRepository implements LoginRepository {
     private MongoClient mongoClient;
 
     private static final String DATABASE_NAME = "hp_print_os";
-    private static final String COLLECTION_NAME = "users";
+    private static final String COLLECTION_USERS = "users";
     private static final String COLLECTION_SESSION = "sessions";
+
+    @Override
+    public Boolean registerUser(String username, String password) {
+        MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
+        MongoCollection<Document> collection = database.getCollection(COLLECTION_USERS);
+
+        // check if the given user already exsits, return false if so
+        List<Map<String, Object>> results = fetchLoginData(username, password);
+
+        if (results.size() >= 1) {
+            return false;
+        }
+
+        // otherwise insert the username and password
+        Document user = new Document()
+                .append("username", username)
+                .append("password", password);
+        collection.insertOne(user);
+
+        return true;
+    }
 
     @Override
     public List<Map<String, Object>> fetchLoginData(String username, String password) {
@@ -36,7 +57,7 @@ public class MongoDBLoginRepository implements LoginRepository {
         // Move this outside of this function in the future
         // Possibly have it so it tries to connect on startup
         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-        MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
+        MongoCollection<Document> collection = database.getCollection(COLLECTION_USERS);
 
         List<Map<String, Object>> results = new ArrayList<>();
         /*
@@ -54,9 +75,9 @@ public class MongoDBLoginRepository implements LoginRepository {
     }
 
     @Override
-    public String fetchUserID(String username){
+    public String fetchUserID(String username) {
         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-        MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
+        MongoCollection<Document> collection = database.getCollection(COLLECTION_USERS);
 
         List<Map<String, Object>> results = new ArrayList<>();
         /*
@@ -77,13 +98,13 @@ public class MongoDBLoginRepository implements LoginRepository {
     }
 
     @Override
-    public String logSessionToken(String uID){
+    public String logSessionToken(String uID) {
         MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
         MongoCollection<Document> collection = database.getCollection(COLLECTION_SESSION);
 
         Document document = new Document();
 
-        try{
+        try {
             SecureRandom secureRandom = SecureRandom.getInstanceStrong();
             byte[] bytes = secureRandom.generateSeed(16);
             secureRandom.nextBytes(bytes);
@@ -92,13 +113,13 @@ public class MongoDBLoginRepository implements LoginRepository {
             document.append("SessionID", str);
             collection.insertOne(document);
 
-            return(str);
-           
-        } catch(NoSuchAlgorithmException ex){
+            return (str);
+
+        } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(MongoDBLoginRepository.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        return("Error: No Session Token was created.");
+
+        return ("Error: No Session Token was created.");
 
     }
 }

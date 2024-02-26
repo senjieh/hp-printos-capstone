@@ -15,6 +15,10 @@ public class LoginService {
     @Autowired
     private LoginRepository loginRepository;
 
+    public boolean registerUser(String username, String password) {
+        return loginRepository.registerUser(username, password);
+    }
+
     public boolean fetchLoginData(String username, String password) {
         List<Map<String, Object>> rawData = loginRepository.fetchLoginData(username, password);
 
@@ -23,12 +27,12 @@ public class LoginService {
         return (rawData.size() >= 1);
     }
 
-    public String logSessionToken(String username){
+    public String logSessionToken(String username) {
 
         String userID = loginRepository.fetchUserID(username);
 
         String sessionToken = loginRepository.logSessionToken(userID);
 
-        return(sessionToken);
+        return (sessionToken);
     }
 }

@@ -11,8 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.ignoringRequestMatchers("/login")) // double check if disabling csrf is a good idea for
-                                                                  // login
+        http.csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/registration")) // double check if disabling csrf is
+                                                                                   // a good idea for login
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/login").permitAll() // unauthenticated users can acccess login page
                         .requestMatchers("/printers/**").authenticated() // unauthenticated users cannot access
