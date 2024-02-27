@@ -7,7 +7,7 @@ public class LoginRequest {
 
     // Should error out and display these messages to the front end
     // somehow
-    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Only alphanumeric characters are allowed")
+    @Pattern(regexp = "^[a-zA-Z0-9]*@[a-zA-Z0-9]*\\.[a-zA-Z0-9]*$", message = "Only valid email format allowed")
     private String username;
 
     @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Only alphanumeric characters are allowed")
