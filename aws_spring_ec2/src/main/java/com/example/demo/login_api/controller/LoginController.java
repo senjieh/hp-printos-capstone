@@ -35,18 +35,20 @@ public class LoginController {
         if (bindingResult.hasErrors()) {
             // Throw a bad request
             return ResponseEntity.badRequest()
-                    .body("Login unsuccessful " + bindingResult.getErrorCount() + bindingResult.getAllErrors());
+                    .body("Register unsuccessful");
         }
 
         String username = registrationRequest.getUsername();
         String password = registrationRequest.getPassword();
 
-        // sanitize email and password (username has valid email ender, both password
-        // and email contain alphanumeric characters)
+        // Hash the input 
+        String hashedUser = Hashing.sha256()
+                .hashString(username, StandardCharsets.UTF_8)
+                .toString();
 
-        // hash the email and password
+        String hashedPass = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
 
-        if (loginService.registerUser(username, password)) {
+        if (loginService.registerUser(hashedUser, hashedPass)) {
 
             // log new session in db
             // String sessionToken = loginService.logSessionToken(hashedUser);
