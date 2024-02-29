@@ -22,6 +22,8 @@ import HomePage from './pages/HomePage.vue';
 import PrinterPage from './pages/PrinterPage.vue';
 import PrinterDisplay from './pages/PrinterDisplay.vue';
 import LoginPage from './pages/LoginPage.vue';
+import RegistrationPage from './pages/RegistrationPage.vue';
+import UserPage from './pages/UserPage.vue';
 
 // Define routes
 const routes = [
@@ -41,9 +43,22 @@ const routes = [
     props: true
   },
   {
+    path: '/user',
+    name: 'UserPage',
+    component: UserPage,
+    meta: { requiresAuth: true },
+    props: true
+  },
+  {
     path: '/login',
     name: 'LoginPage',
     component: LoginPage,
+    props: true
+  },
+  {
+    path: '/register',
+    name: 'RegistrationPage',
+    component: RegistrationPage,
     props: true
   }
 ];

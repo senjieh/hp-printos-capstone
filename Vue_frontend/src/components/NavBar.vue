@@ -2,7 +2,7 @@
 import hplogo from '@/assets/hplogo.png';
 import homepageicon from '@/assets/homepageicon.png';
 import printericon from '@/assets/printericon.png';
-// import darkmodeicon from @/assets/
+import usericon from '@/assets/user.png';
 import { state } from '@/store/store.js'; 
 
 export default {
@@ -16,8 +16,8 @@ export default {
     return {
       logoImagePath: hplogo,
       homepageImagePath: homepageicon,
-      printerImagePath: printericon
-      // darkModeImagePath: darkmodeicon
+      printerImagePath: printericon,
+      userImagePath: usericon
     }
   },
   methods: {
@@ -26,6 +26,9 @@ export default {
     },
     goToPrinterPage() {
       this.$router.push('/printers');
+    },
+    goToUserPage() {
+      this.$router.push('/user');
     }
   },
   setup() {
@@ -39,15 +42,22 @@ export default {
 </script>
 <template>
   <div class="nav-bar-div" :class="{ 'dark-mode': dark_mode_setting }">
-    <img class="nav-bar-logo" :src="logoImagePath" alt="hp-logo">
-    <button class="nav-button" @click="goToHomePage">
-        <img class="nav-bar-icon" :src="homepageImagePath" alt="homepage-icon">
-    </button>
-    <button class="nav-button" @click="goToPrinterPage">
-        <img class="nav-bar-icon" :src="printerImagePath" alt="printer-icon">
-    </button>
-    <InputSwitch class="darkmode-switch" v-model="isDarkMode" @change="toggleDarkMode">
-    </InputSwitch>
+    <div class="nav-section-div">
+      <img class="nav-bar-logo" :src="logoImagePath" alt="hp-logo">
+      <button class="nav-button" @click="goToHomePage">
+          <img class="nav-bar-icon" :src="homepageImagePath" alt="homepage-icon">
+      </button>
+      <button class="nav-button" @click="goToPrinterPage">
+          <img class="nav-bar-icon" :src="printerImagePath" alt="printer-icon">
+      </button>
+    </div>
+    <div class="nav-section-div">
+      <InputSwitch class="darkmode-switch" v-model="isDarkMode" @change="toggleDarkMode">
+      </InputSwitch>
+      <button class="nav-button" @click="goToUserPage">
+          <img class="nav-bar-icon" :src="userImagePath" alt="printer-icon">
+      </button>
+    </div>
   </div>
 </template>
 
@@ -57,7 +67,8 @@ export default {
 .nav-bar-div{
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-content: center;
+    justify-content: space-between;
     width: 90px;
     margin-right: 100px;
     height: 100vh;
@@ -66,6 +77,11 @@ export default {
     box-shadow: -2px 2px 20px 5px rgba(0,0,0,0.05);
     -webkit-box-shadow: -2px 2px 20px 5px rgba(0,0,0,0.05);
     -moz-box-shadow: -2px 2px 20px 5px rgba(0,0,0,0.05);
+}
+.nav-section-div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .nav-bar-div.dark-mode{

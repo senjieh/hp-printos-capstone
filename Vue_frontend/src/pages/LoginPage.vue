@@ -18,6 +18,9 @@
       </div>
 
       <button type="submit">Login</button>
+      <div @click="goToRegistrationPage" class="form-link-div"> 
+        <p @click="goToRegistrationPage" class="form-link">New User? Make an Account.</p>
+      </div>
     </form>
   </div>
 </template>
@@ -50,7 +53,9 @@ export default {
       }
       document.cookie = name + "=" + (value || "") + expires + "; path=/";
     },
-
+    goToRegistrationPage() {
+      this.$router.push('/register');
+    },
     async onSubmit() {
       try {
         // const url = 'http://localhost:8080/login';
@@ -96,8 +101,17 @@ export default {
   color: white;
 }
 
+.form-link-div{
+  margin-top: 10px;
+}
+
 .form-group {
   margin-bottom: 15px;
+}
+
+.form-link {
+  font-size: 15px;
+  text-decoration: underline;
 }
 
 .form-group label {
