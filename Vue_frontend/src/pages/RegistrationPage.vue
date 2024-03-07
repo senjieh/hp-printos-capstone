@@ -7,15 +7,15 @@
     
         <!-- Login Form -->
         <form @submit.prevent="onSubmit">
-            <!-- <div class="form-group">
+            <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" v-model="username" required>
-            </div> -->
+            </div>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" v-model="email" required>
-            </div>
+            </div> -->
 
             <div class="form-group">
                 <label for="password">Password:</label>
