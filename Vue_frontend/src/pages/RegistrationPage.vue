@@ -73,27 +73,42 @@ import axios from 'axios';
             this.$router.push('/login');
         },
         async onSubmit() {
-            if (this.password !== this.retypedPassword) {
-                this.errorMessage = "Passwords do not match.";
+
+            try {
+                if (this.password !== this.retypedPassword) {
+                    this.errorMessage = "Passwords do not match.";
+                    setTimeout(() => { this.errorMessage = ''; }, 3000);
+                    return;
+                }
+        
+
+                const url = 'http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/registration';
+                const response = await axios.post(url, {
+                username: this.username,
+                password: this.password,
+                //email: this.email
+                });
+                console.log(response);
+
+
+                // Temp
+                this.setCookie('user-token', "testtoken", 7); // Example: Set a cookie for 7 days
+        
+                // Redirect after successful registration
+                this.$router.push('/');
+
+            } catch (error) {
+                if (error.response) {
+                this.errorMessage = error.response.data.message || `Error: ${error.response.status}`;
+                } else if (error.request) {
+                this.errorMessage = "No response from server";
+                } else {
+                this.errorMessage = "Error in sending request";
+                }
+
                 setTimeout(() => { this.errorMessage = ''; }, 3000);
-                return;
             }
-    
 
-            const url = 'http://localhost:8080/registration';
-            const response = await axios.post(url, {
-              username: this.username,
-              password: this.password,
-              //email: this.email
-            });
-            console.log(response);
-
-
-        // Temp
-            this.setCookie('user-token', "testtoken", 7); // Example: Set a cookie for 7 days
-    
-            // Redirect after successful registration
-            this.$router.push('/');
         }
     }
 }
