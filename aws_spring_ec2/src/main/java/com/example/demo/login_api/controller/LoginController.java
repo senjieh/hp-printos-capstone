@@ -1,7 +1,7 @@
 package com.example.demo.login_api.controller;
 
 import com.example.demo.login_api.model.LoginRequest;
-import com.example.demo.login_api.model.RegistrationRequest;
+// import com.example.demo.login_api.model.RegistrationRequest;
 import com.example.demo.login_api.service.LoginService;
 import com.google.common.hash.Hashing;
 
