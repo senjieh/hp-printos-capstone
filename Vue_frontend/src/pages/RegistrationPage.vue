@@ -7,11 +7,16 @@
     
         <!-- Login Form -->
         <form @submit.prevent="onSubmit">
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" v-model="username" required>
+            </div> -->
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" v-model="email" required>
             </div>
-    
+
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input :type="showPassword ? 'text' : 'password'" id="password" v-model="password" required>
@@ -20,11 +25,6 @@
             <div class="form-group">
                 <label for="retypedPassword">Retype Password:</label>
                 <input :type="showPassword ? 'text' : 'password'" id="retypedPassword" v-model="retypedPassword" required>
-            </div>
-    
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" v-model="email" required>
             </div>
     
             <div class="form-group">
@@ -41,6 +41,7 @@
 </template>
   
 <script>
+import axios from 'axios';
   export default {
     props: {
       dark_mode_setting: {
@@ -79,13 +80,13 @@
             }
     
 
-            // const url = 'http://localhost:8080/login';
-            // const response = await axios.post(url, {
-            //   username: this.username,
-            //   password: this.password,
-            //   email: this.email
-            // });
-            // console.log(response);
+            const url = 'http://localhost:8080/registration';
+            const response = await axios.post(url, {
+              username: this.username,
+              password: this.password,
+              //email: this.email
+            });
+            console.log(response);
 
 
         // Temp
