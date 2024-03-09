@@ -56,7 +56,6 @@ public class PrinterService {
     public List<PrinterKPI> fetchPrinterData(long start, long end, String interval, int printerId) {
         List<Map<String, Object>> rawData = printerRepository.fetchPrinterData(start, end, printerId);
 
-
         // Convert raw data to list of Printer KPIs
         List<PrinterKPI> initialData = rawData.stream().map(item -> {
             PrinterKPI printer = new PrinterKPI();
@@ -91,7 +90,7 @@ public class PrinterService {
             result.add(aggregatedPrinter);
         }
 
-        return result;
+        return result; // look into how springboot is turning objects into json
     }
 
     private Printer convertMapToPrinter(Map<String, Object> item) {
@@ -116,9 +115,9 @@ public class PrinterService {
         return rawData.stream().map(this::convertMapToPrinter).collect(Collectors.toList());
     }
 
-
     private long getIntervalStartTimestamp(long currentTimestamp, String interval) {
-        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(currentTimestamp), ZoneId.systemDefault());
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(currentTimestamp),
+                ZoneId.systemDefault());
         switch (interval) {
             case "hour":
                 dateTime = dateTime.truncatedTo(ChronoUnit.HOURS);
@@ -160,4 +159,3 @@ public class PrinterService {
     }
 
 }
-
