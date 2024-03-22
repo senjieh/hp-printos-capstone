@@ -11,13 +11,15 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/registration")) // double check if
+        http
+                // .requiresChannel(channel -> channel.anyRequest().requiresSecure()) // for
+                // enabling https
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/registration")) // double check if
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/login").permitAll() // unauthenticated users can acccess login page
                         .requestMatchers("/printers/**").authenticated() // unauthenticated users cannot access
                                                                          // endpoints that include "printers"
-                        .anyRequest().permitAll())
-                .requiresChannel(channel -> channel.anyRequest().requiresSecure()); // for enabling https
+                        .anyRequest().permitAll());
         return http.build(); // required
     }
 }
