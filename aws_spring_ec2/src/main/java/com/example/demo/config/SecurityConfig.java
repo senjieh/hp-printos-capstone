@@ -12,7 +12,8 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // .requiresChannel(channel -> channel.anyRequest().requiresSecure()) // for
+                .requiresChannel(channel -> channel.anyRequest().requiresSecure()) 
+                // for
                 // enabling https
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/registration")) // double check if
                 .authorizeHttpRequests((authorize) -> authorize
