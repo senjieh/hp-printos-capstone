@@ -89,9 +89,9 @@ export default {
                 const endTimestamp = new Date(dates.value[1]).getTime() / 1000;
                 console.log(startTimestamp);
                 console.log(endTimestamp);
-                const graph_url = `http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/printers/${printer_id}/print-data?date_start=${startTimestamp}&date_end=${endTimestamp}&interval=hour`;
-                const printer_data_url = `http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/printers/${printer_id}/print-data?date_start=${startTimestamp}&date_end=${endTimestamp}&interval=month`;
-                const printer_details_url = `http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/printers/${printer_id}/printer-details`;
+                const graph_url = `https://indacloudtoo.com/printers/${printer_id}/print-data?date_start=${startTimestamp}&date_end=${endTimestamp}&interval=hour`;
+                const printer_data_url = `https://indacloudtoo.com/printers/${printer_id}/print-data?date_start=${startTimestamp}&date_end=${endTimestamp}&interval=month`;
+                const printer_details_url = `https://indacloudtoo.com/printers/${printer_id}/printer-details`;
 
 
                 console.log(printer_data_url);

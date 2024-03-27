@@ -19,7 +19,7 @@ export default {
 
         const fetchData = async () => {
             try {
-                const url = `http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/user/printers?user_id=1`;
+                const url = `https://indacloudtoo.com/user/printers?user_id=1`;
                 const response = await axios.get(url);
                 printers.value = response.data;
 

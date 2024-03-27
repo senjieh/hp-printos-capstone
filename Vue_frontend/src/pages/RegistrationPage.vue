@@ -82,7 +82,7 @@ import axios from 'axios';
                 }
         
 
-                const url = 'http://ec2-3-145-70-195.us-east-2.compute.amazonaws.com/registration';
+                const url = 'https://indacloudtoo.com/registration';
                 const response = await axios.post(url, {
                 username: this.username,
                 password: this.password,
