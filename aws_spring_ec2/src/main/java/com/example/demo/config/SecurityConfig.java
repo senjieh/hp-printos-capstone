@@ -18,8 +18,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/registration")) // double check if
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/login").permitAll() // unauthenticated users can acccess login page
-                        .requestMatchers("/printers/**").authenticated() // unauthenticated users cannot access
-                                                                         // endpoints that include "printers"
+                        // .requestMatchers("/printers/**").authenticated() // unauthenticated users cannot access
+                        //                                                  // endpoints that include "printers"
                         .anyRequest().permitAll());
         return http.build(); // required
     }
