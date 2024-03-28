@@ -32,17 +32,16 @@ public class LoginController {
     @PostMapping("/registration")
     public ResponseEntity<String> register_reponse(@RequestBody @Valid LoginRequest registrationRequest,
             BindingResult bindingResult) {
-        // System.out.println(bindingResult.getErrorCount());
         if (bindingResult.hasErrors()) {
             // Throw a bad request
             return ResponseEntity.badRequest()
-                    .body("Register unsuccessful " + bindingResult.toString());
+                    .body("Registeration unsuccessful");
         }
 
         String username = registrationRequest.getUsername();
         String password = registrationRequest.getPassword();
 
-        // Hashing should probably be in service layer because it's business logic
+        // Hashing should be in service layer because it's business logic
 
         // Hash the input
         String hashedUser = Hashing.sha256()
