@@ -24,6 +24,7 @@ import PrinterDisplay from './pages/PrinterDisplay.vue';
 import LoginPage from './pages/LoginPage.vue';
 import RegistrationPage from './pages/RegistrationPage.vue';
 import UserPage from './pages/UserPage.vue';
+import Github_OAuthCallback from './pages/Github-OAuthCallback.vue';
 
 // Define routes
 const routes = [
@@ -54,6 +55,11 @@ const routes = [
     name: 'LoginPage',
     component: LoginPage,
     props: true
+  },
+  {
+    path: '/github-oauth',
+    name: 'OAuthCallback',
+    component: Github_OAuthCallback
   },
   {
     path: '/register',

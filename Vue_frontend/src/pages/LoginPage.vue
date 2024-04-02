@@ -18,18 +18,25 @@
       </div>
 
       <button type="submit">Login</button>
+
       <div @click="goToRegistrationPage" class="form-link-div"> 
         <p @click="goToRegistrationPage" class="form-link">New User? Make an Account.</p>
       </div>
+
+      <LoginWGithub></LoginWGithub>
+
     </form>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-
+import LoginWGithub from '@/components/LoginWGithub.vue';
 
 export default {
+  components: {
+    LoginWGithub
+  },
   props: {
     dark_mode_setting: {
       type: Boolean,
@@ -55,6 +62,9 @@ export default {
     },
     goToRegistrationPage() {
       this.$router.push('/register');
+    },
+    goToGithubOAuth() {
+      this.$router.push('/OAuth');
     },
     async onSubmit() {
       try {
