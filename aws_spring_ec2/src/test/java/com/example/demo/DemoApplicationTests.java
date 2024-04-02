@@ -5,8 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.demo.device_provisioning_api.controller.DeviceProvisioningController;
-import com.example.demo.login_api.controller.LoginController;
+import com.example.demo.controller.LoginController;
 
 // @SpringBootTest
 // class DemoApplicationTests {

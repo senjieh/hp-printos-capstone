@@ -1,7 +1,9 @@
-package com.example.demo.login_api.controller;
+package com.example.demo.controller;
 
-import com.example.demo.login_api.model.LoginRequest;
-import com.example.demo.login_api.service.LoginService;
+import com.example.demo.model.LoginRequest;
+import com.example.demo.service.LoginService;
+import com.example.demo.service.TokenService;
+
 import com.google.common.hash.Hashing;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
+
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -21,6 +28,12 @@ public class LoginController {
 
     @Autowired
     private LoginService loginService;
+
+    private final TokenService tokenService;
+    
+    public LoginController(TokenService tokenService){
+        this.tokenService = tokenService;
+    }
 
     @PostMapping("/registration")
     public ResponseEntity<String> register_response(@RequestBody @Valid LoginRequest registrationRequest,
@@ -45,23 +58,40 @@ public class LoginController {
     }
 
     @GetMapping("/gh-oauth")
-    public ResponseEntity<String> githubOAuth(@RequestParam("code") String code) {
-        String accessToken = loginService.fetchAccessToken(code);
-        if (accessToken == null) {
-            return ResponseEntity.badRequest().body("Failed to retrieve access token");
-        }
+    public ResponseEntity<?> githubOAuth(@RequestParam("code") String code) {
+        // String accessToken = loginService.fetchAccessToken(code);
+        // if (accessToken == null) {
+        //     return ResponseEntity.badRequest().body("Failed to retrieve access token");
+        // }
 
-        System.out.println(accessToken);
+        // System.out.println(accessToken);
 
-        Map<String, Object> userInfo = loginService.fetchGitHubUserInfo(accessToken);
-        if (userInfo == null) {
-            return ResponseEntity.badRequest().body("Failed to retrieve user info");
-        }
+        // Map<String, Object> userInfo = loginService.fetchGitHubUserInfo(accessToken);
+        // if (userInfo == null) {
+        //     return ResponseEntity.badRequest().body("Failed to retrieve user info");
+        // }
 
-        System.out.println(userInfo);
+        // System.out.println(userInfo);
 
-        String userLogin = (String) userInfo.get("login");
-        return ResponseEntity.ok().body("GitHub User Login: " + userLogin);
+        // String userLogin = (String) userInfo.get("login");
+        // return ResponseEntity.ok().body("GitHub User Login: " + userLogin);
+
+        // // Authenticate against database records
+        // UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin);
+        // if (userDetails == null) {
+        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User does not exist");
+        // }
+
+        // Programmatically authenticate the user
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "yoota", "test");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Generate JWT token
+        String jwtToken = tokenService.generateToken(authentication);
+
+        return ResponseEntity.ok().body("JWT Token: " + jwtToken);
+
     }
 
     @PostMapping("/login")

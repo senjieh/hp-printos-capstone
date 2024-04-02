@@ -1,4 +1,4 @@
-package com.example.demo.login_api.repository;
+package com.example.demo.repository;
 
 import java.util.List;
 import java.util.Map;

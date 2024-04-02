@@ -1,4 +1,4 @@
-package com.example.demo.login_api.model;
+package com.example.demo.model;
 
 import jakarta.validation.constraints.Pattern;
 

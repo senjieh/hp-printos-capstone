@@ -1,4 +1,4 @@
-package com.example.demo.login_api.repository;
+package com.example.demo.repository;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
