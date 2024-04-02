@@ -25,15 +25,23 @@ import java.util.logging.Logger;
 public class MongoDBLoginRepository implements LoginRepository {
     @Autowired
     private MongoClient mongoClient;
+    private final MongoDatabase db;
 
     private static final String DATABASE_NAME = "hp_print_os";
     private static final String COLLECTION_USERS = "users";
     private static final String COLLECTION_SESSION = "sessions";
 
+    // constructor injection ftw!
+    public MongoDBLoginRepository(MongoClient mongoClient) {
+        this.mongoClient = mongoClient;
+        this.db = mongoClient.getDatabase(DATABASE_NAME);
+    }
+
+    // private final MongoDatabase db = mongoClient.getDatabase(DATABASE_NAME);
+
     @Override
     public Boolean registerUser(String username, String password) {
-        MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-        MongoCollection<Document> collection = database.getCollection(COLLECTION_USERS);
+        MongoCollection<Document> collection = db.getCollection(COLLECTION_USERS);
 
         // check if the given user already exsits, return false if so
         List<Map<String, Object>> results = fetchLoginData(username, password);
@@ -53,11 +61,7 @@ public class MongoDBLoginRepository implements LoginRepository {
 
     @Override
     public List<Map<String, Object>> fetchLoginData(String username, String password) {
-
-        // Move this outside of this function in the future
-        // Possibly have it so it tries to connect on startup
-        MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-        MongoCollection<Document> collection = database.getCollection(COLLECTION_USERS);
+        MongoCollection<Document> collection = db.getCollection(COLLECTION_USERS);
 
         List<Map<String, Object>> results = new ArrayList<>();
         /*
@@ -76,8 +80,7 @@ public class MongoDBLoginRepository implements LoginRepository {
 
     @Override
     public String fetchUserID(String username) {
-        MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-        MongoCollection<Document> collection = database.getCollection(COLLECTION_USERS);
+        MongoCollection<Document> collection = db.getCollection(COLLECTION_USERS);
 
         List<Map<String, Object>> results = new ArrayList<>();
         /*
@@ -99,8 +102,7 @@ public class MongoDBLoginRepository implements LoginRepository {
 
     @Override
     public String logSessionToken(String uID) {
-        MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-        MongoCollection<Document> collection = database.getCollection(COLLECTION_SESSION);
+        MongoCollection<Document> collection = db.getCollection(COLLECTION_SESSION);
 
         Document document = new Document();
 

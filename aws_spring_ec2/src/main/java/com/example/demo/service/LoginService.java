@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.repository.LoginRepository;
+import com.google.common.hash.Hashing;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,12 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 
 @Service
 public class LoginService {
 
+    @Autowired
     private final LoginRepository loginRepository;
+
     private final WebClient webClient;
 
     @Value("${github.client.id}")
@@ -22,18 +26,30 @@ public class LoginService {
     @Value("${github.client.secret}")
     private String clientSecret;
 
-    @Autowired
     public LoginService(LoginRepository loginRepository, WebClient.Builder webClientBuilder) {
         this.loginRepository = loginRepository;
         this.webClient = webClientBuilder.build();
     }
 
     public boolean registerUser(String username, String password) {
-        return loginRepository.registerUser(username, password);
+        String hashedUser = Hashing.sha256()
+                .hashString(username, StandardCharsets.UTF_8)
+                .toString();
+
+        String hashedPass = Hashing.sha256().hashString(password,
+                StandardCharsets.UTF_8).toString();
+
+        return loginRepository.registerUser(hashedUser, hashedPass);
     }
 
     public boolean fetchLoginData(String username, String password) {
-        return loginRepository.fetchLoginData(username, password).size() >= 1;
+        String hashedUser = Hashing.sha256()
+                .hashString(username, StandardCharsets.UTF_8)
+                .toString();
+
+        String hashedPass = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
+
+        return loginRepository.fetchLoginData(hashedUser, hashedPass).size() >= 1;
     }
 
     public String logSessionToken(String username) {
@@ -49,8 +65,7 @@ public class LoginService {
                 .bodyValue(Map.of(
                         "client_id", clientId,
                         "client_secret", clientSecret,
-                        "code", code
-                ))
+                        "code", code))
                 .retrieve()
                 .bodyToMono(Map.class)
                 .block(); // Consider using asynchronous handling
