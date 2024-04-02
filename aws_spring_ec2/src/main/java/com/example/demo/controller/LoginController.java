@@ -36,7 +36,7 @@ public class LoginController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("Registration unsuccessful 1");
+            return ResponseEntity.badRequest().body("Registration unsuccessful 1"); // get rid of 1 in body msg for demo
         }
 
         String username = registrationRequest.getUsername();
@@ -45,7 +45,7 @@ public class LoginController {
         if (loginService.registerUser(username, password)) {
             return ResponseEntity.ok().body("Registration successful");
         }
-        return ResponseEntity.status(401).body("Registration unsuccessful 2");
+        return ResponseEntity.status(401).body("Registration unsuccessful 2"); // get rid of 2 in body msg for demo
     }
 
     @GetMapping("/gh-oauth")
