@@ -85,25 +85,35 @@ export default {
         const fetchData = async (printer_id) => {
             console.log(printer_id);
             try {
-                const startTimestamp = new Date(dates.value[0]).getTime() / 1000;
-                const endTimestamp = new Date(dates.value[1]).getTime() / 1000;
+                const startTimestamp = parseInt(dates.value[0].getTime() / 1000, 10);
+                const endTimestamp = parseInt(dates.value[1].getTime() / 1000, 10);
                 console.log(startTimestamp);
                 console.log(endTimestamp);
                 const graph_url = `https://indacloudtoo.com/printers/${printer_id}/print-data?date_start=${startTimestamp}&date_end=${endTimestamp}&interval=hour`;
                 const printer_data_url = `https://indacloudtoo.com/printers/${printer_id}/print-data?date_start=${startTimestamp}&date_end=${endTimestamp}&interval=month`;
                 const printer_details_url = `https://indacloudtoo.com/printers/${printer_id}/printer-details`;
 
-
                 console.log(printer_data_url);
                 const graph_url_response = await axios.get(graph_url);
                 console.log(graph_url_response.data);
-                chartData.value.labels = graph_url_response.data.map(item => convertTimestampToISO(item.timestampStart));
-                chartData.value.datasets[0].data = graph_url_response.data.map(item => item.totalPrinted);
-
+                if (graph_url_response.data.length === 0) {
+                    chartData.value.labels = [];
+                    chartData.value.datasets[0].data = []; // double check if empty array is valid
+                } else {
+                    chartData.value.labels = graph_url_response.data.map(item => convertTimestampToISO(item.timestampStart));
+                    chartData.value.datasets[0].data = graph_url_response.data.map(item => item.totalPrinted);
+                }
+                
                 const printer_data_url_response = await axios.get(printer_data_url);
                 console.log(printer_data_url_response.data);
-                KPIData.value = printer_data_url_response.data[0];
-
+                if (printer_data_url_response.data.length === 0) {
+                    KPIData.value.totalPrinted = 0;
+                    KPIData.value.totalDropped = 0;
+                    KPIData.value.totalPlanned = 0;
+                } else {
+                    KPIData.value = printer_data_url_response.data[0];
+                }
+                
                 const printer_details_url_response = await axios.get(printer_details_url);
                 printerDetails.value = printer_details_url_response.data;
                 
@@ -148,13 +158,12 @@ export default {
             formattedTimeElapsed.value = formatTime(timeElapsedInSeconds);
         };
 
-
         onMounted(() => {
             /* This is where the date range is auto-populated */
             const today = new Date();
             const oneMonthAgo = new Date(new Date().setMonth(today.getMonth() - 1));
 
-            dates.value = [oneMonthAgo.toISOString().split('T')[0], today.toISOString().split('T')[0]];
+            dates.value = [oneMonthAgo, today];
             fetchData(printer_id_param.value);
             printerStatusCalc();
             intervalId.value = (printerStatus.value == "Online" ? setInterval(updateTimeElapsed, 1000) : formattedTimeElapsed.value = "N/A" );
