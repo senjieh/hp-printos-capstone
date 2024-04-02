@@ -37,8 +37,6 @@ public class MongoDBLoginRepository implements LoginRepository {
         this.db = mongoClient.getDatabase(DATABASE_NAME);
     }
 
-    // private final MongoDatabase db = mongoClient.getDatabase(DATABASE_NAME);
-
     @Override
     public Boolean registerUser(String username, String password) {
         MongoCollection<Document> collection = db.getCollection(COLLECTION_USERS);
