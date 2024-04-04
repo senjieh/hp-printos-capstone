@@ -63,9 +63,6 @@ export default {
     goToRegistrationPage() {
       this.$router.push('/register');
     },
-    goToGithubOAuth() {
-      this.$router.push('/OAuth');
-    },
     async onSubmit() {
       try {
         const url = 'https://indacloudtoo.com/login';
