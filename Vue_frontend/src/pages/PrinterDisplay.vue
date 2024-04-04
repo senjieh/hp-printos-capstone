@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'; // Import useRoute to access router param
 import axios from 'axios';
 import defaultPrinterImage from '@/assets/printer.png';
 import { state } from '@/store/store.js';
+import { format } from 'date-fns';
 
 export default { 
     props: {
@@ -39,48 +40,18 @@ export default {
                 borderColor: '#0067ff',
                 pointRadius: 4,
                 pointBackgroundColor: '#0067ff',
-            }],
-            options: {
-                scales: {
-                    x: {
-                        ticks: {
-                            font: {
-                                size: 40, 
-                            },
-                            color: '#ffffff', // this should turn x-axis lines to be white, but does not work
-                        },
-                    },
-                    y: {
-                        ticks: {
-                            font: {
-                                size: 40, 
-                            },
-                            color: "#00FF00", // this should turn y-axis lines to be green, but does not work
-                        },
-                    },
-                },
-                plugins: {
-                    legend: {
-                        labels: {
-                            font: {
-                                size: 40, 
-                            }
-                        },
-                    },
-                    tooltip: {
-                        bodyFont: {
-                            size: 40, 
-                        },
-                        titleFont: {
-                            size: 40, 
-                        }
-                    },
-                },
-            },
+            }]
         });
 
         // Convert timestamp to ISO format
         const convertTimestampToISO = (timestamp) => new Date(timestamp * 1000).toISOString();
+
+        // Convert timestamp to month day format
+        const convertTimestampToMonthDay = (timestamp) => {
+            const date = new Date(timestamp * 1000);
+            const monthDay = format(date, 'M/d');
+            return monthDay;
+        }
 
         const fetchData = async (printer_id) => {
             console.log(printer_id);
@@ -96,14 +67,18 @@ export default {
                 console.log(printer_data_url);
                 const graph_url_response = await axios.get(graph_url);
                 console.log(graph_url_response.data);
+
+                // populating graph
                 if (graph_url_response.data.length === 0) {
                     chartData.value.labels = [];
                     chartData.value.datasets[0].data = []; // double check if empty array is valid
                 } else {
-                    chartData.value.labels = graph_url_response.data.map(item => convertTimestampToISO(item.timestampStart));
+                    chartData.value.labels = graph_url_response.data.map(item => convertTimestampToMonthDay(item.timestampStart));
+                    console.log(chartData.value.labels);
                     chartData.value.datasets[0].data = graph_url_response.data.map(item => item.totalPrinted);
                 }
                 
+                // populating aggregate cards
                 const printer_data_url_response = await axios.get(printer_data_url);
                 console.log(printer_data_url_response.data);
                 if (printer_data_url_response.data.length === 0) {
