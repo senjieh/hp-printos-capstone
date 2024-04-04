@@ -23,7 +23,7 @@
         <p @click="goToRegistrationPage" class="form-link">New User? Make an Account.</p>
       </div>
 
-      <LoginWGithub></LoginWGithub>
+      <!-- <LoginWGithub></LoginWGithub> -->
 
     </form>
   </div>
