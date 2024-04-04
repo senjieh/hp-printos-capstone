@@ -19,7 +19,7 @@ MONGOURI = os.getenv("MONGOURI")
 
 # Setup MongoDB client and select the database and collection
 client = MongoClient(MONGOURI, 27017)
-db = client['dev_print_data']
+db = client['hp_print_os']
 collection = db['print_data']
 
 # This is the Cloudservice that subscribes to the Message Broker for AWS IoT to receive data through 
@@ -42,7 +42,7 @@ class CmdData:
         self.input_cert = "printOS_subscriber.cert.pem"
         self.input_key = "printOS_subscriber.private.key"
         self.input_clientId = "subscriber"
-        self.input_topic = "sdk/test/python"
+        self.input_topic = "sdk/printer/#"
         self.input_count = 0
         self.input_proxy_host = None
         self.input_proxy_port = 0
@@ -86,7 +86,15 @@ def on_message_received(topic, payload, dup, qos, retain, **kwargs):
     print("Received message from topic '{}': {}".format(topic, payload))
     global received_count
     received_count += 1
-    collection.insert_one({"print_data": payload})
+    try:
+        # Assuming payload is a byte string of JSON
+        payload_dict = json.loads(payload.decode('utf-8'))  # Decode byte string and parse JSON
+        collection.insert_one({"topic": topic, "data": payload_dict})
+    except json.JSONDecodeError:
+        print("Error decoding JSON payload")
+    except Exception as e:
+        print(f"Error inserting into MongoDB: {e}")
+
 
 # Callback when the connection successfully connects
 def on_connection_success(connection, callback_data):
@@ -103,58 +111,58 @@ def on_connection_failure(connection, callback_data):
 def on_connection_closed(connection, callback_data):
     print("Connection closed")
 
-if __name__ == '__main__':
-    # Set up proxy options if necessary
-    proxy_options = None
-    if cmdData.input_proxy_host and cmdData.input_proxy_port:
-        proxy_options = http.HttpProxyOptions(
-            host_name=cmdData.input_proxy_host,
-            port=cmdData.input_proxy_port
-        )
 
-    # Create a MQTT connection using the configuration data
-    mqtt_connection = mqtt_connection_builder.mtls_from_path(
-        endpoint=cmdData.input_endpoint,
-        port=cmdData.input_port,
-        cert_filepath=cmdData.input_cert,
-        pri_key_filepath=cmdData.input_key,
-        ca_filepath=cmdData.input_ca,
-        on_connection_interrupted=on_connection_interrupted,
-        on_connection_resumed=on_connection_resumed,
-        client_id=cmdData.input_clientId,
-        clean_session=False,
-        keep_alive_secs=30,
-        http_proxy_options=proxy_options,
-        on_connection_success=on_connection_success,
-        on_connection_failure=on_connection_failure,
-        on_connection_closed=on_connection_closed
+# Set up proxy options if necessary
+proxy_options = None
+if cmdData.input_proxy_host and cmdData.input_proxy_port:
+    proxy_options = http.HttpProxyOptions(
+        host_name=cmdData.input_proxy_host,
+        port=cmdData.input_proxy_port
     )
-    
-    # Connect to the MQTT server
-    print(f"Connecting to {cmdData.input_endpoint} with client ID '{cmdData.input_clientId}'...")
-    connect_future = mqtt_connection.connect()
-    connect_future.result()
-    print("Connected!")
 
-    # Subscribe to the topic and wait for messages
-    print(f"Subscribing to topic '{cmdData.input_topic}'...")
-    subscribe_future, packet_id = mqtt_connection.subscribe(
-        topic=cmdData.input_topic,
-        qos=mqtt.QoS.AT_LEAST_ONCE,
-        callback=on_message_received
-    )
-    subscribe_result = subscribe_future.result()
-    print(f"Subscribed with {str(subscribe_result['qos'])}")
+# Create a MQTT connection using the configuration data
+mqtt_connection = mqtt_connection_builder.mtls_from_path(
+    endpoint=cmdData.input_endpoint,
+    port=cmdData.input_port,
+    cert_filepath=cmdData.input_cert,
+    pri_key_filepath=cmdData.input_key,
+    ca_filepath=cmdData.input_ca,
+    on_connection_interrupted=on_connection_interrupted,
+    on_connection_resumed=on_connection_resumed,
+    client_id=cmdData.input_clientId,
+    clean_session=False,
+    keep_alive_secs=30,
+    http_proxy_options=proxy_options,
+    on_connection_success=on_connection_success,
+    on_connection_failure=on_connection_failure,
+    on_connection_closed=on_connection_closed
+)
 
-    # Continuous loop to keep the script running and listen for messages
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("Interrupted, disconnecting...")
+# Connect to the MQTT server
+print(f"Connecting to {cmdData.input_endpoint} with client ID '{cmdData.input_clientId}'...")
+connect_future = mqtt_connection.connect()
+connect_future.result()
+print("Connected!")
 
-    # Disconnect from the MQTT server
-    print("Disconnecting...")
-    disconnect_future = mqtt_connection.disconnect()
-    disconnect_future.result()
-    print("Disconnected!")
+# Subscribe to the topic and wait for messages
+print(f"Subscribing to topic '{cmdData.input_topic}'...")
+subscribe_future, packet_id = mqtt_connection.subscribe(
+    topic=cmdData.input_topic,
+    qos=mqtt.QoS.AT_LEAST_ONCE,
+    callback=on_message_received
+)
+subscribe_result = subscribe_future.result()
+print(f"Subscribed with {str(subscribe_result['qos'])}")
+
+# Continuous loop to keep the script running and listen for messages
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("Interrupted, disconnecting...")
+
+# Disconnect from the MQTT server
+print("Disconnecting...")
+disconnect_future = mqtt_connection.disconnect()
+disconnect_future.result()
+print("Disconnected!")

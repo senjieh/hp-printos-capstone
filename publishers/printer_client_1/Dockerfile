@@ -31,4 +31,4 @@ COPY . .
 EXPOSE 4000
 
 # The command that will be executed when the container starts
-CMD ["python", "main.py"]
+CMD ["python","-u" "main.py"]

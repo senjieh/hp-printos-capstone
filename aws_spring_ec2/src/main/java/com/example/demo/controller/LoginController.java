@@ -50,33 +50,30 @@ public class LoginController {
 
     @GetMapping("/gh-oauth")
     public ResponseEntity<?> githubOAuth(@RequestParam("code") String code) {
-        // String accessToken = loginService.fetchAccessToken(code);
-        // if (accessToken == null) {
-        // return ResponseEntity.badRequest().body("Failed to retrieve access token");
-        // }
+        String accessToken = loginService.fetchAccessToken(code);
+        if (accessToken == null) {
+        return ResponseEntity.badRequest().body("Failed to retrieve access token");
+        }
 
-        // System.out.println(accessToken);
+        System.out.println(accessToken);
 
-        // Map<String, Object> userInfo = loginService.fetchGitHubUserInfo(accessToken);
-        // if (userInfo == null) {
-        // return ResponseEntity.badRequest().body("Failed to retrieve user info");
-        // }
+        Map<String, Object> userInfo = loginService.fetchGitHubUserInfo(accessToken);
+        if (userInfo == null) {
+        return ResponseEntity.badRequest().body("Failed to retrieve user info");
+        }
 
-        // System.out.println(userInfo);
+        System.out.println(userInfo);
 
-        // String userLogin = (String) userInfo.get("login");
-        // return ResponseEntity.ok().body("GitHub User Login: " + userLogin);
+        String userLogin = (String) userInfo.get("login");
 
-        // // Authenticate against database records
-        // UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin);
-        // if (userDetails == null) {
-        // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User does not
-        // exist");
-        // }
+        if (loginService.fetchGitLoginData(userLogin).size() < 1) {
+            return ResponseEntity.status(401).body("User does not exist");
+        }
 
+        String sessionToken = loginService.logSessionToken(userLogin);
         // Programmatically authenticate the user
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "yoota", "test");
+            userLogin, sessionToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Generate JWT token

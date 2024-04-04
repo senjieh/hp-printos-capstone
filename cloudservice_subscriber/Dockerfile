@@ -8,7 +8,7 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-# Copy the necessary files to the container at /app
+# # Copy the necessary files to the container at /app
 ADD ./root-CA.crt /app/root-CA.crt
 ADD ./printOS_subscriber.cert.pem /app/printOS_subscriber.cert.pem
 ADD ./printOS_subscriber.private.key /app/printOS_subscriber.private.key
@@ -31,4 +31,4 @@ COPY . .
 EXPOSE 3999
 
 # The command that will be executed when the container starts
-CMD ["python", "main.py"]
+CMD ["python", "-u", "main.py"]

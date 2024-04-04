@@ -77,6 +77,25 @@ public class MongoDBLoginRepository implements LoginRepository {
     }
 
     @Override
+    public List<Map<String, Object>> fetchGitLoginData(String username) {
+        MongoCollection<Document> collection = db.getCollection(COLLECTION_USERS);
+
+        List<Map<String, Object>> results = new ArrayList<>();
+        /*
+         * query checking whether given username and password parameters
+         * exist in our MongoDB database
+         */
+        collection.find(
+                Filters.and(
+                        Filters.eq("git_username", username)))
+                .into(results);
+
+        // System.out.println(results); // for debugging
+        return results;
+    }
+
+
+    @Override
     public String fetchUserID(String username) {
         MongoCollection<Document> collection = db.getCollection(COLLECTION_USERS);
 

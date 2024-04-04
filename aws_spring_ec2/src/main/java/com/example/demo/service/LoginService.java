@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.List;
 import java.util.Map;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
@@ -50,6 +51,14 @@ public class LoginService {
         String hashedPass = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
 
         return loginRepository.fetchLoginData(hashedUser, hashedPass).size() >= 1;
+    }
+
+    public List<Map<String, Object>> fetchGitLoginData(String git_username) {
+        String hashedUser = Hashing.sha256()
+                .hashString(git_username, StandardCharsets.UTF_8)
+                .toString();
+
+        return loginRepository.fetchGitLoginData(hashedUser);
     }
 
     public String logSessionToken(String username) {
