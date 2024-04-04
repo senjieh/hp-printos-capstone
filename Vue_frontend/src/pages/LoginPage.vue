@@ -80,7 +80,7 @@ export default {
         this.$router.push('/');
       } catch (error) {
         if (error.response) {
-          this.errorMessage = error.response.data.message || `Error: ${error.response.status}`;
+          this.errorMessage = error.response;
         } else if (error.request) {
           this.errorMessage = "No response from server";
         } else {
