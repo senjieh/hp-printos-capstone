@@ -20,7 +20,7 @@ MONGOURI = os.getenv("MONGOURI")
 # Setup MongoDB client and select the database and collection
 client = MongoClient(MONGOURI, 27017)
 db = client['hp_print_os']
-collection = db['print_data']
+collection = db['printer_data']
 
 # This is the Cloudservice that subscribes to the Message Broker for AWS IoT to receive data through 
 # an MQTT connection. On startup, the device connects to the server and subscribes to the topic and 
@@ -89,7 +89,8 @@ def on_message_received(topic, payload, dup, qos, retain, **kwargs):
     try:
         # Assuming payload is a byte string of JSON
         payload_dict = json.loads(payload.decode('utf-8'))  # Decode byte string and parse JSON
-        collection.insert_one({"topic": topic, "data": payload_dict})
+        # collection.insert_one({"topic": topic, "data": payload_dict})
+        collection.insert_one(payload_dict)
     except json.JSONDecodeError:
         print("Error decoding JSON payload")
     except Exception as e:

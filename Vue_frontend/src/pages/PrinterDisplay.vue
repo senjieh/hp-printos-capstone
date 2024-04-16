@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'; // Import useRoute to access router param
 import axios from 'axios';
 import defaultPrinterImage from '@/assets/printer.png';
 import { state } from '@/store/store.js';
-import { format } from 'date-fns';
 
 export default { 
     props: {
@@ -43,15 +42,22 @@ export default {
             }]
         });
 
-        // Convert timestamp to ISO format
-        const convertTimestampToISO = (timestamp) => new Date(timestamp * 1000).toISOString();
 
-        // Convert timestamp to month day format
-        const convertTimestampToMonthDay = (timestamp) => {
+        // Convert timestamp to month day and time format
+        const convertTimestampToMonthDayTime = (timestamp) => {
             const date = new Date(timestamp * 1000);
-            const monthDay = format(date, 'M/d');
-            return monthDay;
+            const month = date.getMonth() + 1; // January is 0, so add 1 to make it 1-indexed
+            const day = date.getDate();
+            let hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            const minutesFormatted = minutes < 10 ? '0' + minutes : minutes;
+
+            return `${month}/${day} ${hours}:${minutesFormatted} ${ampm}`;
         }
+
 
         const fetchData = async (printer_id) => {
             console.log(printer_id);
@@ -73,7 +79,17 @@ export default {
                     chartData.value.labels = [];
                     chartData.value.datasets[0].data = []; // double check if empty array is valid
                 } else {
-                    chartData.value.labels = graph_url_response.data.map(item => convertTimestampToMonthDay(item.timestampStart));
+                    graph_url_response.data.sort((a,b) => {
+                        if (a["timestampStart"] < b["timestampStart"]) {
+                            return -1; // return -1 if the first item should come first
+                        }
+                        if (a["timestampStart"] > b["timestampStart"]) {
+                            return 1;  // return 1 if the second item should come first
+                        }
+                        return 0;     // return 0 if no sorting is needed (they are equal)
+                    });
+                    
+                    chartData.value.labels = graph_url_response.data.map(item => convertTimestampToMonthDayTime(item.timestampStart));
                     console.log(chartData.value.labels);
                     chartData.value.datasets[0].data = graph_url_response.data.map(item => item.totalPrinted);
                 }
@@ -86,7 +102,8 @@ export default {
                     KPIData.value.totalDropped = 0;
                     KPIData.value.totalPlanned = 0;
                 } else {
-                    KPIData.value = printer_data_url_response.data[0];
+                    // grab final month
+                    KPIData.value = printer_data_url_response.data[printer_data_url_response.data.length-1];
                 }
                 
                 const printer_details_url_response = await axios.get(printer_details_url);

@@ -31,11 +31,11 @@
 
 <script>
 import axios from 'axios';
-import LoginWGithub from '@/components/LoginWGithub.vue';
+// import LoginWGithub from '@/components/LoginWGithub.vue';
 
 export default {
   components: {
-    LoginWGithub
+    // LoginWGithub
   },
   props: {
     dark_mode_setting: {

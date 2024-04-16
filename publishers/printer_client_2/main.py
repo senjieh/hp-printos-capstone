@@ -9,6 +9,10 @@ import time
 import json
 from utils.command_line_utils import CommandLineUtils
 from data_creator2 import get_job_results
+import tkinter as tk
+from tkinter import messagebox
+import random
+import string
 
 # This client uses the Message Broker for AWS IoT to send data through an MQTT connection. 
 # On startup, the device connects to the server and begins publishing messages to that topic.
@@ -26,12 +30,10 @@ class CmdData:
         self.input_cert = "printOS_client2.cert.pem"
         self.input_key = "printOS_client2.private.key"
         self.input_clientId = "publisher_2"
-        self.input_topic = "sdk/test/printer2"
+        self.input_topic = "sdk/printer/test"
         self.input_count = 0
-        # Assuming you do not need the proxy settings
         self.input_proxy_host = None
         self.input_proxy_port = 0
-        # Add other necessary fields with default or hardcoded values as needed
         self.input_port = 8883  # Assuming the default MQTT over TLS port
         self.input_is_ci = False  # Assuming you do not need CI functionality
         self.input_message = get_job_results(10)
@@ -68,8 +70,66 @@ def on_connection_closed(connection, callback_data):
     print("Connection closed")
 
 
+# Function to generate a predefined printer data
+def send_standard_data():
+    printer_data = {
+        "printer_id": 1,
+        "timestamp": int(time.time()),
+        "print_job_pages": 5,
+        "print_job_pages_dropped": 3,
+        "print_job_pages_printed": 2
+    }
+    send_message(printer_data)
+
+# Function to generate a variant of the printer data
+def send_variant_data():
+    printer_data = {
+        "printer_id": 1,
+        "timestamp": int(time.time()),  # Current timestamp
+        "print_job_pages": 10,
+        "print_job_pages_dropped": 2,
+        "print_job_pages_printed": 8
+    }
+    send_message(printer_data)
+
+# Function to generate random printer data
+def send_random_data():
+    pages = random.randint(1, 100)
+    pages_dropped = random.randint(0, pages)
+    pages_printed = pages - pages_dropped
+    printer_data = {
+        "printer_id": 1,
+        "timestamp": int(time.time()),
+        "print_job_pages": pages,
+        "print_job_pages_dropped": pages_dropped,
+        "print_job_pages_printed": pages_printed
+    }
+    send_message(printer_data)
+
+# Function to publish the message
+def send_message(printer_data):
+    message_json = json.dumps(printer_data)
+    mqtt_connection.publish(
+        topic=cmdData.input_topic,
+        payload=message_json,
+        qos=mqtt.QoS.AT_LEAST_ONCE)
+    print(f"Published: {printer_data}")
+
+
 if __name__ == '__main__':
-    # Create the proxy options if the data is present in cmdData
+    # GUI Setup
+    root = tk.Tk()
+    root.title("Printer Data Publisher")
+
+    # Buttons
+    standard_button = tk.Button(root, text="Send Standard Data", command=send_standard_data)
+    variant_button = tk.Button(root, text="Send Variant Data", command=send_variant_data)
+    random_button = tk.Button(root, text="Send Random Data", command=send_random_data)
+
+    standard_button.pack(pady=10)
+    variant_button.pack(pady=10)
+    random_button.pack(pady=10)
+
     proxy_options = None
     if cmdData.input_proxy_host is not None and cmdData.input_proxy_port != 0:
         proxy_options = http.HttpProxyOptions(
@@ -93,46 +153,23 @@ if __name__ == '__main__':
         on_connection_failure=on_connection_failure,
         on_connection_closed=on_connection_closed)
 
+
     if not cmdData.input_is_ci:
         print(f"Connecting to {cmdData.input_endpoint} with client ID '{cmdData.input_clientId}'...")
     else:
         print("Connecting to endpoint with client ID")
     connect_future = mqtt_connection.connect()
-
-    # Future.result() waits until a result is available
     connect_future.result()
     print("Connected!")
 
-    message_count = cmdData.input_count
-    message_topic = cmdData.input_topic
-    message_string = cmdData.input_message
+    root.mainloop()
 
-    # Publish message to server desired number of times.
-    # This step is skipped if message is blank.
-    # This step loops forever if count was set to 0.
-    if message_string:
-        if message_count == 0:
-            print("Sending messages until program killed")
-        else:
-            print("Sending {} message(s)".format(message_count))
+    # Disconnect on close
+    def on_closing():
+        print("Disconnecting...")
+        disconnect_future = mqtt_connection.disconnect()
+        disconnect_future.result()
+        print("Disconnected!")
+        root.destroy()
 
-        publish_count = 1
-        while (publish_count <= message_count) or (message_count == 0):
-            #format message
-            message = "{} [{}]".format(message_string, publish_count)
-            print("Publishing message to topic '{}': {}".format(message_topic, message))
-            message_json = json.dumps(message)
-            #send message to broker
-            mqtt_connection.publish(
-                topic=message_topic,
-                payload=message_json,
-                qos=mqtt.QoS.AT_LEAST_ONCE)
-            #wait 10s to send another message
-            time.sleep(10)
-            publish_count += 1
-
-    # Disconnect
-    print("Disconnecting...")
-    disconnect_future = mqtt_connection.disconnect()
-    disconnect_future.result()
-    print("Disconnected!")
+    root.protocol("WM_DELETE_WINDOW", on_closing)
