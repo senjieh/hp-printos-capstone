@@ -82,20 +82,30 @@ def on_resubscribe_complete(resubscribe_future):
             sys.exit("Server rejected resubscribe to topic: {}".format(topic))
 
 
+seen_messages = set()  # This will store message IDs if they're short-lived
+
 def on_message_received(topic, payload, dup, qos, retain, **kwargs):
     print("Received message from topic '{}': {}".format(topic, payload))
     global received_count
     received_count += 1
     try:
-        # Assuming payload is a byte string of JSON
         payload_dict = json.loads(payload.decode('utf-8'))  # Decode byte string and parse JSON
-        # collection.insert_one({"topic": topic, "data": payload_dict})
+        
+        # Check if the message ID is in seen_messages to prevent duplicates
+        message_id = payload_dict.get('timestamp')  # Assuming 'timestamp' can be a unique identifier
+        if message_id in seen_messages:
+            print("Duplicate message received, ignoring.")
+            return
+        
+        # Add the message ID to the set
+        seen_messages.add(message_id)
+
+        # Insert the message into MongoDB
         collection.insert_one(payload_dict)
     except json.JSONDecodeError:
         print("Error decoding JSON payload")
     except Exception as e:
         print(f"Error inserting into MongoDB: {e}")
-
 
 # Callback when the connection successfully connects
 def on_connection_success(connection, callback_data):
@@ -147,13 +157,11 @@ print("Connected!")
 
 # Subscribe to the topic and wait for messages
 print(f"Subscribing to topic '{cmdData.input_topic}'...")
-subscribe_future, packet_id = mqtt_connection.subscribe(
+subscribe_future= mqtt_connection.subscribe(
     topic=cmdData.input_topic,
     qos=mqtt.QoS.AT_LEAST_ONCE,
     callback=on_message_received
 )
-subscribe_result = subscribe_future.result()
-print(f"Subscribed with {str(subscribe_result['qos'])}")
 
 # Continuous loop to keep the script running and listen for messages
 try:
